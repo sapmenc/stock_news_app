@@ -42,6 +42,7 @@ class _MainScreenState extends State<MainScreen> {
       },
       child: SafeArea(
         child: Scaffold(
+          // extendBodyBehindAppBar: true,
           body: IndexedStack(
             index: selectedTab,
             children: items.map((page) => Navigator(key: page.navkey,
@@ -52,6 +53,7 @@ class _MainScreenState extends State<MainScreen> {
             },)).toList(),
           ),
           extendBody: true,
+          
           bottomNavigationBar: Navbar(pageIndex: selectedTab, onTap: (index){
             if(index==selectedTab){
               items[index].navkey.currentState?.popUntil((route) => route.isFirst);

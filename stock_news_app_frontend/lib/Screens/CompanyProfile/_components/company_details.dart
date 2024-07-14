@@ -20,7 +20,8 @@ class _CompanyDetailsState extends State<CompanyDetails> {
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               const CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -29,49 +30,51 @@ class _CompanyDetailsState extends State<CompanyDetails> {
               ),
               const SizedBox(width: 10),
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                                              const Text(
-                        "Company name",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                                                const Text(
+                          "Company name",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("1248 articles"),
-                          SizedBox(width: 40,),
-                                      ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isFollowing = !isFollowing;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // <-- Radius
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: !isFollowing?40:36.6, vertical: 0),
-                  
-                  backgroundColor: isFollowing?Color(0xFF4285F4):Colors.transparent,
-                  side: const BorderSide(width: 1, color: Colors.grey),
-                ),
-                child: !isFollowing? const Row(
-                  children: [
-                    Text("Follow", style: TextStyle(color: Colors.white,),),
-                    SizedBox(width: 5,),
-                    Text("+", style: TextStyle(color: Colors.white),)
-                  ],
-                ):Text("Following", style: TextStyle(color: Colors.white),)
-              )
-
-                        ],
-                      )
-                        ],
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("1248 articles"),
+                                        ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isFollowing = !isFollowing;
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20), // <-- Radius
+                                          ),
+                                          padding: EdgeInsets.symmetric(horizontal: !isFollowing?40:36.6, vertical: 0),
+                                          
+                                          backgroundColor: isFollowing?Color(0xFF4285F4):Colors.transparent,
+                                          side: const BorderSide(width: 1, color: Colors.grey),
+                                        ),
+                                        child: !isFollowing? const Row(
+                                          children: [
+                                            Text("Follow", style: TextStyle(color: Colors.white,),),
+                                            SizedBox(width: 5,),
+                                            Text("+", style: TextStyle(color: Colors.white),)
+                                          ],
+                                        ):Text("Following", style: TextStyle(color: Colors.white),)
+                                      )
+                        
+                          ],
+                        )
+                          ],
+                        ),
                       )
             ],
           ),

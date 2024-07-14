@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_news_app_frontend/Screens/CommentsScreen/comments_screen.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stock_news_app_frontend/_components/Comments.dart';
@@ -63,19 +64,20 @@ class _PostsState extends State<Posts> {
       });
     }
     Future? handleCommentSectionOpen(){
-      return showModalBottomSheet(context: context, isScrollControlled: true, builder: (context)=>
-      FractionallySizedBox(
-        heightFactor: 0.8,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          decoration: const BoxDecoration(
+      // return showModalBottomSheet(context: context, isScrollControlled: true, builder: (context)=>
+      // FractionallySizedBox(
+      //   heightFactor: 0.8,
+      //   child: Container(
+      //     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      //     decoration: const BoxDecoration(
             
-            color: Color(0xFF111111),
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
-          ),
-          child: Comments()
-        ),
-      ));
+      //       color: Color(0xFF111111),
+      //       borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
+      //     ),
+      //     child: Comments()
+      //   ),
+      // ));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>CommentsScreen()));
     }
     Function? handlePdf(){}
     var postActions = [

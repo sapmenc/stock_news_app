@@ -90,7 +90,7 @@ class Screen2 extends StatelessWidget {
                 SizedBox(width: 15,),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(

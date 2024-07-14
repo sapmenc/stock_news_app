@@ -11,21 +11,23 @@ class Navbar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: pageIndex,
       onTap: onTap,
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
       backgroundColor: Color.fromARGB(186, 0, 0, 0),
       selectedItemColor: Color.fromARGB(255, 24, 136, 234),
       unselectedItemColor: Color.fromARGB(255, 255, 255, 255),
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.search_outlined),
+          icon: Icon(Icons.search_outlined, size: 30,),
           label: 'Search',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
+          icon: Icon(Icons.home_outlined, size: 30,),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_2_outlined),
+          icon: Icon(Icons.person_2_outlined, size: 30,),
           label: 'Profile',
         ),
       ],

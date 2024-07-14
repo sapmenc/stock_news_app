@@ -6,10 +6,15 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      
-      body:  SingleChildScrollView(
-        padding: EdgeInsets.only(top: 40, left: 10, right: 10),
+    return  Scaffold(
+                appBar: AppBar(
+            title: Text("logo"),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+          ),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.only( left: 10, right: 10),
         child: Column(
 
             mainAxisSize: MainAxisSize.min, // Adjusts the Column to the minimum space required

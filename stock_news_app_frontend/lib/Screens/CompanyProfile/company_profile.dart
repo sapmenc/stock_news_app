@@ -12,8 +12,17 @@ class CompanyProfile extends StatefulWidget {
 class _CompanyProfileState extends State<CompanyProfile> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+            title: Text("logo"),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            leading: BackButton(onPressed: (){
+              Navigator.pop(context);
+            }),
+          ),
+      body: const SingleChildScrollView(
         padding: EdgeInsets.all(15),
         child: Column(
           children: [

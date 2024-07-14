@@ -36,7 +36,7 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
               ),
             )),
             ElevatedButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>MainScreen()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
             }, style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF34A853), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),),  child: const Text("Save details", style: TextStyle(color: Colors.white),),)
           ],
       

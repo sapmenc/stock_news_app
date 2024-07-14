@@ -55,17 +55,19 @@ class _CompaniesState extends State<Companies> {
               });
             },
             child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isFollowing?Color(0xFF4285F4):Colors.transparent,
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
                     color: Color(0xFF727272),
                   )),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-              child: Text(
+              child: !isFollowing?Text(
                 "+",
                 style: TextStyle(color: Colors.white, fontSize: 22),
-              ),
+              ):Icon(Icons.check, color: Colors.white,)
             ))
       ],
     );

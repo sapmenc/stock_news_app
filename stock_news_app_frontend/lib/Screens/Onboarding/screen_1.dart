@@ -64,7 +64,7 @@ class Screen1 extends StatelessWidget {
             SizedBox(height: 50), // Add some spacing between containers
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Screen2()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Screen2()));
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

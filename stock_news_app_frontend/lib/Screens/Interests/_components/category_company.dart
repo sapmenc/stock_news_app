@@ -26,12 +26,12 @@ class _CategoryCompanyState extends State<CategoryCompany> {
                   backgroundColor: isFollowing?Color(0xFF4285F4):Colors.transparent,
                   side: const BorderSide(width: 1, color: Colors.grey),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("Company name", style: TextStyle(color: Colors.white,),),
-                    SizedBox(width: 5,),
-                    Text("+", style: TextStyle(color: Colors.white),)
+                    const Text("Company name", style: TextStyle(color: Colors.white,),),
+                    const SizedBox(width: 5,),
+                    !isFollowing? const Text("+", style: TextStyle(color: Colors.white),): Icon(Icons.check, color: Colors.white, size: 10,)
                   ],
                 )
               );

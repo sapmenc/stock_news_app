@@ -13,6 +13,12 @@ class _ExploreState extends State<Explore> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+                appBar: AppBar(
+            title: Text("logo"),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+          ),
       body: Container(
           padding: EdgeInsets.all(15),
           child: const Column(children: [
