@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stock_news_app_frontend/_components/posts.dart';
-
 class Home extends StatelessWidget {
   const Home({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
 import 'package:stock_news_app_frontend/Screens/Explore/_components/companies.dart';
+import 'package:http/http.dart' as http;
 
 class Explore extends StatefulWidget {
   const Explore({super.key});
@@ -10,6 +12,25 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
+  var userData = null;
+  var companies = null;
+      final baseUrl = "https://stock-market-news-backend.vercel.app/api";
+    final client = http.Client();
+    // Uri userUrl = Uri.parse(baseUrl+'/user/email');
+
+    void fetchCompanies()async {
+    Uri companiesUrl = Uri.parse(baseUrl+'/company/page?page=1&limit=25');
+    final response = await client.get(companiesUrl);
+    print("########################################################");
+    print(response.body);
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
