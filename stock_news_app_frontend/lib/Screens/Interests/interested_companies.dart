@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:stock_news_app_frontend/Screens/Interests/_components/category.dart';
 import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/utils.dart';
 
 class InterestedCompanies extends StatefulWidget {
   const InterestedCompanies({super.key});
@@ -14,7 +15,7 @@ class InterestedCompanies extends StatefulWidget {
 
 class _InterestedCompaniesState extends State<InterestedCompanies> {
   var categories = {};
-  final base_url = "https://stock-market-news-backend.vercel.app/api";
+  final base_url = '$baseUrl';
 
   @override
   void initState() {
@@ -71,9 +72,6 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
               ElevatedButton(
                 onPressed: () async {
                   final client = http.Client();
-        
-                  final base_url =
-                      "https://stock-market-news-backend.vercel.app/api";
                   Uri user = Uri.parse(base_url + "/user/email");
                   final req = jsonEncode({"email": "mdareeb176@gmail.com"});
                   final response = await client.post(
@@ -89,17 +87,13 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
                   // print(res);
                   final data = res['data'];
                   print(data);
-                  if (data['following'].length==0){
+                  if (data['following'].length == 0) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Follow atleast one company."))
-                    );
+                        SnackBar(content: Text("Follow atleast one company.")));
+                  } else {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => MainScreen()));
                   }
-                  else{
-
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
-                  }
-                  
-        
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF34A853),
