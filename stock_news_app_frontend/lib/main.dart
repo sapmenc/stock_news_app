@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +11,9 @@ import 'package:stock_news_app_frontend/firebase_options.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/utils.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -42,26 +41,31 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> redirect() async {
-    Uri userUri = Uri.parse('${baseUrl}' + 'user/email'); 
-    if (FirebaseAuth.instance.currentUser != null) {
-      final req = jsonEncode({
-        'email': FirebaseAuth.instance.currentUser!.email
-      });
-      final response = await client.post(userUri, body: req, headers: {
-        'Content-Type': 'application/json',
-      });
-      final res = jsonDecode(response.body);
-      if (res['data']['following'].length == 0) {
-        setState(() {
-          isNew = true;
-          isLoggedin = true;
-        });
+    try {
+      Uri userUri = Uri.parse('${baseUrl}' + 'user/email');
+      if (FirebaseAuth.instance.currentUser != null) {
+        final req = jsonEncode({'email': FirebaseAuth.instance.currentUser!.email});
+        final response = await client.post(userUri, body: req, headers: {'Content-Type': 'application/json'});
+        final res = jsonDecode(response.body);
+
+        if (res['data']['following'].length == 0) {
+          setState(() {
+            isNew = true;
+            isLoggedin = true;
+          });
+        } else {
+          setState(() {
+            isLoggedin = true;
+          });
+        }
       } else {
         setState(() {
-          isLoggedin = true;
+          isLoggedin = false;
         });
       }
-    } else {
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
       setState(() {
         isLoggedin = false;
       });
@@ -70,31 +74,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a loading indicator while determining the login state
-    if (isLoggedin == null) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.deepPurple,
-            brightness: Brightness.dark,
-            primary: const Color.fromARGB(255, 255, 255, 255),
-            secondary: Colors.amber,
-            background: Colors.black,
-            surface: Colors.black,
-          ),
-          scaffoldBackgroundColor: Colors.black, // Set background color to black
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      );
-    }
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
@@ -107,14 +86,20 @@ class _MyAppState extends State<MyApp> {
           background: Colors.black,
           surface: Colors.black,
         ),
-        scaffoldBackgroundColor: Colors.black, // Set background color to black
+        scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),
-      home: isLoggedin! && isNew
-          ? InterestedCompanies()
-          : isLoggedin!
-              ? MainScreen()
-              : Screen1(),
+      home: isLoggedin == null
+          ? Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : isLoggedin! && isNew
+              ? InterestedCompanies()
+              : isLoggedin!
+                  ? MainScreen()
+                  : Screen1(),
     );
   }
 }
