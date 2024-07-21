@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
-class Comment extends StatelessWidget {
-  const Comment({super.key});
+class Comment extends StatefulWidget {
+  final name;
+  final comment;
+  const Comment({super.key, required this.comment, required this.name});
 
+  @override
+  State<Comment> createState() => _CommentState();
+}
+
+class _CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
         double screenWidth = MediaQuery.sizeOf(context).width;
@@ -21,12 +28,13 @@ class Comment extends StatelessWidget {
             minHeight:
                 double.minPositive // Minimum height of 30% of screen height
             ),
-        child: const Column(
+        child:  Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(
-                "User Name",
-                style: TextStyle(
+                widget.name,
+                style: const TextStyle(
                   color: Color(0xFF79ABFF),
                   fontWeight: FontWeight.bold,
                 ),
@@ -38,8 +46,9 @@ class Comment extends StatelessWidget {
               height: 5,
             ),
             Text(
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+              widget.comment,
               style: TextStyle(fontSize: 13),
+              textAlign: TextAlign.left,
             )
           ],
         ),

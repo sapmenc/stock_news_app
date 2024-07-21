@@ -19,7 +19,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-            title: Text("logo"),
+            title: Image.asset('assets/Alpha-logo.png', scale: 7,),
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0.0,
@@ -34,7 +34,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
             color: Color(0xFF111111),
             // borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
           ),
-          child: Comments()
+          child: Comments(id: widget.postId)
         ),
       ),
     );

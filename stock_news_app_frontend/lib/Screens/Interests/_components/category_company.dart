@@ -27,7 +27,7 @@ class _CategoryCompanyState extends State<CategoryCompany> {
     Uri unfollow = Uri.parse(base_url + "company/unfollow");
     final req = jsonEncode(
         {"userId": userId, "companyId": widget.id});
-    print(widget.id);
+    // print(widget.id);
     if (isFollowing) {
       setState(() {
         isFollowing = !isFollowing;
@@ -40,7 +40,7 @@ class _CategoryCompanyState extends State<CategoryCompany> {
         },
       );
 
-      print(response.body);
+      // print(response.body);
       final res = jsonDecode(response.body);
       if (res['status'] == false) {
         setState(() {
@@ -60,7 +60,7 @@ class _CategoryCompanyState extends State<CategoryCompany> {
         },
       );
 
-      print(response.body);
+      // print(response.body);
       // final res = jsonDecode(response.body);
       // if (res['status'] == false) {
       //   setState(() {

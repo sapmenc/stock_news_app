@@ -49,8 +49,8 @@ class _SignUpFormState extends State<SignUpForm> {
       },
     );
 
-    print("111111111111111111111111111111111111111111111111111111111111111111");
-    print(response.body);
+    // print("111111111111111111111111111111111111111111111111111111111111111111");
+    // print(response.body);
     final res = jsonDecode(response.body);
     if (res['status']){
       SharedPreferences sharedPreferences =await SharedPreferences.getInstance();

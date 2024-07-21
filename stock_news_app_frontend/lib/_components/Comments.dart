@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/_components/Comment.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
 class Comments extends StatefulWidget {
-  const Comments({super.key});
+  final id;
+  const Comments({super.key, required this.id});
 
   @override
   State<Comments> createState() => _CommentsState();
@@ -14,22 +16,46 @@ class Comments extends StatefulWidget {
 
 class _CommentsState extends State<Comments> {
     final client = http.Client();
-  List? commentData = null;
+    final _commentController = TextEditingController();
+  List? commentData = [];
   void fetchComments()async{
+
     Uri fetchcomments = Uri.parse(baseUrl+'post/comments/page?page=1&limit=25');
     final req = jsonEncode({
-      "postId": "669d1b2cb8611a0f3fb1b05a"
+      "postId": widget.id
     });
+
     final response = await client.post(fetchcomments, body: req, headers: {
 "Content-Type": "application/json"   
 });
   final res = jsonDecode(response.body);
-  print(res['data']['comments']);
+  print(res);
+  
   if (res['status']){
     setState(() {
       commentData = res['data']['comments'];
     });
   }
+
+  }
+  void createComment()async{
+        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final userId = sharedPreferences.getString("userId");
+// print("111111111111111111111111111111111111");
+// print(_commentController.text);
+Uri commentUri = Uri.parse(baseUrl+'post/comment');
+final req = jsonEncode({
+  "postId": widget.id,
+  "comment": _commentController.text,
+  "userId": userId
+});
+final response = await client.post(commentUri, body: req, headers: {
+  'Content-Type': 'Application/json'
+});
+// print(response.body);
+final res = jsonDecode(response.body);
+_commentController.clear();
+fetchComments();
 
   }
   @override
@@ -47,8 +73,9 @@ class _CommentsState extends State<Comments> {
         children: [
           Row(
             children: [
-              const Expanded(
+               Expanded(
                 child: TextField(
+                  controller: _commentController,
                   cursorColor: Colors.white,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(10),
@@ -80,16 +107,25 @@ class _CommentsState extends State<Comments> {
                   border: Border.all(color: const Color.fromARGB(150, 158, 158, 158)),
                   borderRadius: BorderRadius.circular(10)
                 ),
-                child: IconButton(onPressed: () {}, icon: SvgPicture.asset('assets/CommentButton.svg')))
+                child: IconButton(onPressed: () {
+                  createComment();
+                }, icon: SvgPicture.asset('assets/CommentButton.svg')))
             ],
           ),
           SizedBox(height: 10), // Add some space between the input and comments
-          Comment(),
-          Comment(),
-          Comment(),
-          Comment(),
-          Comment(),
-          Comment(),
+ Column(
+  mainAxisSize: MainAxisSize.max,
+  children: commentData!.isNotEmpty
+      ? commentData!.map((e) {
+        // print("1111111111111111111111111");
+        // print(e['comment']);
+          return Container(
+            // height: double.infinity,
+            child: Comment(name: e['userId']['name'], comment: e['comment'],)); // Replace with your actual widget
+        }).toList()
+      : [Text("No comments yet!")], // Wrap the single widget in a list
+)
+
         ],
       ),
     );

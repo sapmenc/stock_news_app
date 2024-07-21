@@ -58,11 +58,11 @@ class _LoginFormState extends State<LoginForm> {
        
 
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-        print("22222222222222222222222222222222222222222222");
-        print(FirebaseAuth.instance.currentUser);
+        // print("22222222222222222222222222222222222222222222");
+        // print(FirebaseAuth.instance.currentUser);
          Uri fetchUserUrl = Uri.parse(baseUrl + 'user/email');
         final req = jsonEncode({
-          'email': FirebaseAuth.instance.currentUser!.email
+          "email": FirebaseAuth.instance.currentUser!.email as String
         });
         final response = await client.post(
       fetchUserUrl,
@@ -72,9 +72,10 @@ class _LoginFormState extends State<LoginForm> {
       },
     );
 
-    print(response.body);
+    // print(response.body);
     final res = jsonDecode(response.body);
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // print(res);
     sharedPreferences.setString("userId", res['data']['_id']);
     if (res['data']['following'].length == 0){
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
@@ -84,7 +85,7 @@ class _LoginFormState extends State<LoginForm> {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
         }
       } catch (e) {
-        print(e);
+        // print(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Processing Data')),
         );

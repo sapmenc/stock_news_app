@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/CommentsScreen/comments_screen.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,9 +11,29 @@ import 'package:stock_news_app_frontend/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Posts extends StatefulWidget {
-  const Posts({
-    super.key,
-  });
+    final String id;
+  final String title;
+  final String description;
+  final String name;
+  final int numLikes;
+  final int numDislikes;
+  final int numComments;
+  final List likes;
+  final List dislikes;
+  final String pdf;
+  final String logo;
+  const Posts({super.key, required this.id,
+  required this.logo,
+    required this.title,
+    required this.description,
+    required this.name,
+    required this.numLikes,
+    required this.numDislikes,
+    required this.numComments,
+    required this.likes,
+    required this.dislikes,
+    required this.pdf,
+});
 
   @override
   State<Posts> createState() => _PostsState();
@@ -26,6 +47,32 @@ class _PostsState extends State<Posts> {
   int numDislikes = 0;
   bool isLiked = false;
   bool isDisliked = false;
+  String? userId = null;
+  void setVariables()async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final user_Id = sharedPreferences.getString('userId');
+    
+    // print("11111111111111111111111111111111111111111111111111111111");
+    // print(userId);
+    setState(() {
+      numLikes= widget.numLikes;
+      userId= user_Id;
+      numDislikes= widget.numDislikes;
+      numComments= widget.numComments;
+      if (widget.likes.contains(userId)){
+        isLiked= true;
+      }
+      if (widget.dislikes.contains(userId)){
+        isDisliked= true;
+      }
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+  setVariables();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +92,20 @@ class _PostsState extends State<Posts> {
           }
         }
       });
-      Uri likeUri = Uri.parse(baseUrl + 'post/like');
-      final req = jsonEncode({});
-      final response = await client.post(likeUri,
-          body: req, headers: {'Content-Type': 'application/json'});
+      Uri likeUri = Uri.parse(baseUrl+'post/like');
+      final req = jsonEncode({
+        "userId": userId,
+        "postId": widget.id
+      });
+      // print(req);
+      final response = await client.post(likeUri, body: req, headers: {
+        'Content-Type': 'application/json'
+      });
       final res = jsonDecode(response.body);
-      if (res['status'] == false) {
-        setState(() {
-          if (isLiked == false) {
+      // print(res);
+      if (res['status']==false){
+      setState(() {
+        if(isLiked == false){
             isLiked = true;
             numLikes += 1;
           } else {
@@ -77,14 +130,19 @@ class _PostsState extends State<Posts> {
           }
         }
       });
-      Uri likeUri = Uri.parse(baseUrl + 'post/dislike');
-      final req = jsonEncode({});
-      final response = await client.post(likeUri,
-          body: req, headers: {'Content-Type': 'application/json'});
+        Uri likeUri = Uri.parse(baseUrl+'post/dislike');
+      final req = jsonEncode({
+        "userId": userId,
+        "postId": widget.id
+      });
+      final response = await client.post(likeUri, body: req, headers: {
+        'Content-Type': 'application/json'
+      });
       final res = jsonDecode(response.body);
-      if (res['status'] == false) {
-        setState(() {
-          if (isDisliked == false) {
+      print(res);
+      if(res['status']==false){
+                    setState(() {
+        if(isDisliked == false){
             isDisliked = true;
             numDislikes += 1;
           } else {
@@ -100,7 +158,7 @@ class _PostsState extends State<Posts> {
           context,
           MaterialPageRoute(
               builder: (context) => CommentsScreen(
-                    postId: "",
+                    postId: widget.id,
                   )));
     }
 
@@ -178,24 +236,30 @@ class _PostsState extends State<Posts> {
                     MaterialPageRoute(
                       builder: (context) => CompanyProfile(
                         id: '',
+                        name: widget.name,
                         isFollowing: true,
                       ),
                     ),
                   );
                 },
-                child: const Row(
+                child:  Row(
                   children: [
                     CircleAvatar(
                       backgroundColor: Colors.grey,
                       backgroundImage:
-                          NetworkImage("https://github.com/shadcn.png"),
+                          NetworkImage(widget.logo),
                     ),
                     SizedBox(width: 10),
-                    Text(
-                      "Company name",
-                      style: TextStyle(
-                        color: Color(0xFF79ABFF),
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 200),
+                      child: Text(
+                        widget.name,
+                        style: const TextStyle(
+                          color: Color(0xFF79ABFF),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
                       ),
                     ),
                   ],
@@ -212,8 +276,8 @@ class _PostsState extends State<Posts> {
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: Color(0xFF4285F4))),
             ),
-            child: const Text(
-              "Corporate Insolvency Resolution Process",
+            child: Text(
+              widget.title,
               style: TextStyle(
                 color: Color(0xFF4285F4),
                 fontWeight: FontWeight.bold,
@@ -234,7 +298,7 @@ class _PostsState extends State<Posts> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "ROLTA INDIA LIMITED has informed the Exchange about Corporate Insolvency Resolution Process for the event related to Prior or Post-facto hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello intimation of the meetings of Committee of ... Read More",
+                      widget.description,
                       maxLines: isExpanded ? null : 3,
                       style: const TextStyle(fontSize: 13),
                       overflow: isExpanded

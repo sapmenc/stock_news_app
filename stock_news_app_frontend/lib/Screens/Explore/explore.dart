@@ -27,12 +27,12 @@ class _ExploreState extends State<Explore> {
     void fetchCompanies()async {
     Uri companiesUrl = Uri.parse(baseUrl+'company/page?page=1&limit=25');
     final response = await client.get(companiesUrl);
-    print("333333333333333333333333333333333333333333333333333333");
-    // print(response.body);
+    // print("333333333333333333333333333333333333333333333333333333");
+    print(response.body);
     final res = jsonDecode(response.body);
     final data = res['data'];
     final companiesList = data['companies'];
-    print(companiesList);
+    // print(companiesList);
     setState(() {
       companies=companiesList;
     });
@@ -49,7 +49,7 @@ class _ExploreState extends State<Explore> {
                     },
                   );
                   final res = jsonDecode(response.body);
-                  print(res['data']['following']);
+                  // print(res['data']['following']);
                   setState(() {
                     userData=res['data']['following'];
                   });
@@ -67,7 +67,7 @@ class _ExploreState extends State<Explore> {
   Widget build(BuildContext context) {
     return Scaffold(
                 appBar: AppBar(
-            title: Text("logo"),
+            title: Image.asset('assets/Alpha-logo.png', scale: 7,),
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0.0,
@@ -113,14 +113,14 @@ class _ExploreState extends State<Explore> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: companies.map((e) { 
-                    print(e);
+                    // print(e);
                     var isFollowing = true;
     var matchingCompany = userData!.where((following) => following['_id'] == e['_id']).toList();
   if (matchingCompany.isEmpty){
     print("it is not in the following list");
     isFollowing = false;
   }
-                    return Companies(id:e['_id'], name: e['name'], profile: e['logo'], numArticles: e['post'], isFollowing: isFollowing);
+                    return Companies(id:e['_id'], name: e['name'], profile: e['logo'], numArticles: e['postCount'], isFollowing: isFollowing);
                     
                     }).toList()
                 ),

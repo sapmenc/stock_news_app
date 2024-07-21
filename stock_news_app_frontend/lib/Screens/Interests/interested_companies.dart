@@ -31,16 +31,16 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
     final client = http.Client();
     Uri fetch_companies = Uri.parse(baseUrl + "company/industry");
    
-    print(fetch_companies);
+    // print(fetch_companies);
     final response = await http.get(fetch_companies);
     // final res = jsonDecode(response.body);
-    print(response.body);
+    // print(response.body);
     final res = jsonDecode(response.body);
     setState(() {
       categories = res['data'];
     });
     categories.forEach((key, value) {
-      print(value);
+      // print(value);
     });
   }
 
@@ -48,6 +48,15 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+         appBar: AppBar(
+            title: Image.asset('assets/Alpha-logo.png', scale: 7,),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            leading: BackButton(onPressed: (){
+              Navigator.pop(context);
+            }),
+          ),
         body: Container(
           padding: EdgeInsets.all(15),
           child: Column(
@@ -85,11 +94,11 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
                     },
                   );
                   final res = jsonDecode(response.body);
-                  print(
-                      "##################################################################");
+                  // print(
+                      // "##################################################################");
                   // print(res);
                   final data = res['data'];
-                  print(data);
+                  // print(data);
                   if (data['following'].length == 0) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Follow atleast one company.")));

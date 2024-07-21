@@ -39,8 +39,8 @@ class _CompaniesState extends State<Companies> {
     Uri unfollow = Uri.parse(base_url + "company/unfollow");
     final req = jsonEncode(
         {"userId": userId, "companyId": widget.id});
-    print("3333333333333333333333333333333333333333333333333333");
-    print(widget.id);
+    // print("3333333333333333333333333333333333333333333333333333");
+    // print(widget.id);
     if (isFollowing) {
       setState(() {
         isFollowing = !isFollowing;
@@ -52,7 +52,7 @@ class _CompaniesState extends State<Companies> {
           'Content-Type': 'application/json', // Add this header
         },
       );
-      print(response.body);
+      // print(response.body);
 
       // print(response.body);
       final res = jsonDecode(response.body);
@@ -74,7 +74,7 @@ class _CompaniesState extends State<Companies> {
         },
       );
 
-      print(response.body);
+      // print(response.body);
       final res = jsonDecode(response.body);
       if (res['status'] == false) {
         setState(() {
@@ -99,7 +99,7 @@ class _CompaniesState extends State<Companies> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CompanyProfile(id: widget.id, isFollowing: widget.isFollowing)));
+                        builder: (context) => CompanyProfile( id: widget.id, name: widget.name, isFollowing: widget.isFollowing)));
               },
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -111,7 +111,7 @@ class _CompaniesState extends State<Companies> {
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CompanyProfile(id: widget.id, isFollowing: isFollowing,)));
+                    MaterialPageRoute(builder: (context) => CompanyProfile(id: widget.id, name: widget.name, isFollowing: isFollowing,)));
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +127,7 @@ class _CompaniesState extends State<Companies> {
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
-                  Text("1739 articles")
+                  Text('${widget.numArticles} articles')
                 ],
               ),
             ),

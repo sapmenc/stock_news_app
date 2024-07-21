@@ -32,7 +32,7 @@ class _OtpVerificationState extends State<OtpVerification> {
             keyboardType: TextInputType.number,
             filled: true,
             onSubmit: (code){
-              print("22222222222222222222222222222222222222222222222222222222222222222222 otp is ${code}");
+              // print("22222222222222222222222222222222222222222222222222222222222222222222 otp is ${code}");
             },
             
           ),
