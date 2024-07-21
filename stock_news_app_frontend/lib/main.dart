@@ -1,22 +1,100 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/screen_1.dart';
 import 'package:flutter/services.dart';
-void main() {
-    WidgetsFlutterBinding.ensureInitialized();
+import 'package:stock_news_app_frontend/Screens/main_screen.dart';
+import 'package:stock_news_app_frontend/firebase_options.dart';
+import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/utils.dart';
 
-SystemChrome.setPreferredOrientations([
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((_) {
     runApp(MyApp());
-  });}
+  });
+}
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final client = http.Client();
+  bool isNew = false;
+  bool? isLoggedin = null;
+
+  @override
+  void initState() {
+    super.initState();
+    redirect();
+  }
+
+  Future<void> redirect() async {
+    Uri userUri = Uri.parse('${baseUrl}' + 'user/email'); 
+    if (FirebaseAuth.instance.currentUser != null) {
+      final req = jsonEncode({
+        'email': FirebaseAuth.instance.currentUser!.email
+      });
+      final response = await client.post(userUri, body: req, headers: {
+        'Content-Type': 'application/json',
+      });
+      final res = jsonDecode(response.body);
+      if (res['data']['following'].length == 0) {
+        setState(() {
+          isNew = true;
+          isLoggedin = true;
+        });
+      } else {
+        setState(() {
+          isLoggedin = true;
+        });
+      }
+    } else {
+      setState(() {
+        isLoggedin = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Show a loading indicator while determining the login state
+    if (isLoggedin == null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.dark,
+            primary: const Color.fromARGB(255, 255, 255, 255),
+            secondary: Colors.amber,
+            background: Colors.black,
+            surface: Colors.black,
+          ),
+          scaffoldBackgroundColor: Colors.black, // Set background color to black
+          useMaterial3: true,
+        ),
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
@@ -24,90 +102,19 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
           brightness: Brightness.dark,
-          primary: Colors.deepPurple,
+          primary: const Color.fromARGB(255, 255, 255, 255),
           secondary: Colors.amber,
           background: Colors.black,
           surface: Colors.black,
-          ),
-          scaffoldBackgroundColor: Colors.black, // Set background color to black
+        ),
+        scaffoldBackgroundColor: Colors.black, // Set background color to black
         useMaterial3: true,
       ),
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: const Screen1(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      home: isLoggedin! && isNew
+          ? InterestedCompanies()
+          : isLoggedin!
+              ? MainScreen()
+              : Screen1(),
     );
   }
 }

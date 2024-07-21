@@ -1,15 +1,84 @@
-import 'package:flutter/material.dart';
-import 'package:stock_news_app_frontend/_components/posts.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stock_news_app_frontend/_components/posts.dart';
+import 'package:stock_news_app_frontend/utils.dart';
+import 'package:http/http.dart' as http;
 class CompanyDetails extends StatefulWidget {
-  const CompanyDetails({super.key});
+  final isFollowing;
+  final id;
+  const CompanyDetails({super.key, required this.isFollowing, required this.id});
 
   @override
   State<CompanyDetails> createState() => _CompanyDetailsState();
 }
 
 class _CompanyDetailsState extends State<CompanyDetails> {
+  final client = http.Client();
   bool isFollowing = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    setState(() {
+      isFollowing = widget.isFollowing;
+    });
+    super.initState();
+  }
+
+  void toggleFollow() async {
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      final userId = sharedPreferences.getString('userId');
+    final base_url = '$baseUrl';
+    Uri follow = Uri.parse(base_url + "company/follow");
+    Uri unfollow = Uri.parse(base_url + "company/unfollow");
+    final req = jsonEncode(
+        {"userId": userId, "companyId": widget.id});
+    print("3333333333333333333333333333333333333333333333333333");
+    print(widget.id);
+    if (isFollowing) {
+      setState(() {
+        isFollowing = !isFollowing;
+      });
+      final response = await client.post(
+        unfollow,
+        body: req,
+        headers: {
+          'Content-Type': 'application/json', // Add this header
+        },
+      );
+      print(response.body);
+
+      // print(response.body);
+      final res = jsonDecode(response.body);
+      if (res['status'] == false) {
+        setState(() {
+          isFollowing = !isFollowing;
+        });
+      }
+    } else {
+      setState(() {
+        isFollowing = !isFollowing;
+      });
+
+      final response = await client.post(
+        follow,
+        body: req,
+        headers: {
+          'Content-Type': 'application/json', // Add this header
+        },
+      );
+
+      print(response.body);
+      final res = jsonDecode(response.body);
+      if (res['status'] == false) {
+        setState(() {
+          isFollowing = !isFollowing;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
@@ -49,9 +118,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                             const Text("1248 articles"),
                                         ElevatedButton(
                                         onPressed: () {
-                                          setState(() {
-                                            isFollowing = !isFollowing;
-                                          });
+                                          toggleFollow();
                                         },
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(

@@ -1,10 +1,43 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stock_news_app_frontend/_components/Comment.dart';
-
-class Comments extends StatelessWidget {
+import 'package:stock_news_app_frontend/utils.dart';
+import 'package:http/http.dart' as http;
+class Comments extends StatefulWidget {
   const Comments({super.key});
 
+  @override
+  State<Comments> createState() => _CommentsState();
+}
+
+class _CommentsState extends State<Comments> {
+    final client = http.Client();
+  List? commentData = null;
+  void fetchComments()async{
+    Uri fetchcomments = Uri.parse(baseUrl+'post/comments/page?page=1&limit=25');
+    final req = jsonEncode({
+      "postId": "669d1b2cb8611a0f3fb1b05a"
+    });
+    final response = await client.post(fetchcomments, body: req, headers: {
+"Content-Type": "application/json"   
+});
+  final res = jsonDecode(response.body);
+  print(res['data']['comments']);
+  if (res['status']){
+    setState(() {
+      commentData = res['data']['comments'];
+    });
+  }
+
+  }
+  @override
+  void initState() {
+    fetchComments();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;

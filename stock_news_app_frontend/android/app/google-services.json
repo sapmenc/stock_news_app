@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "178797150389",
+    "project_id": "alpha-stock-news-mobile-app",
+    "storage_bucket": "alpha-stock-news-mobile-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178797150389:android:bbee01d1a1a203fbf17efc",
+        "android_client_info": {
+          "package_name": "com.example.stock_news_app_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP0vMA6UuvNiskB-AN9NDa8bXvAs0bBks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

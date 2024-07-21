@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:stock_news_app_frontend/Screens/CommentsScreen/comments_screen.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stock_news_app_frontend/_components/Comments.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/utils.dart';
 class Posts extends StatefulWidget {
   const Posts({super.key,});
 
@@ -12,6 +15,7 @@ class Posts extends StatefulWidget {
 }
 
 class _PostsState extends State<Posts> {
+  final client = http.Client();
   bool isExpanded = false;
   int numLikes = 0;
   int numComments = 0;
@@ -23,61 +27,79 @@ class _PostsState extends State<Posts> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
     double screenHeight = MediaQuery.sizeOf(context).height;
-    Function? handleLike(){
+    void handleLike()async{
       setState(() {
         if(isLiked == true){
-          setState(() {
             isLiked = false;
             numLikes-=1;
-          });
+          
         }
         else{
-          setState(() {
             isLiked = true;
             numLikes+=1;
             if(isDisliked){
               numDislikes-=1;
               isDisliked = false;
             }
-          });
         }
       });
-    }
-    Function? handleDislike(){
-            setState(() {
-        if(isDisliked == true){
-          setState(() {
-            isDisliked = false;
-            numDislikes-=1;
-          });
+      Uri likeUri = Uri.parse(baseUrl+'post/like');
+      final req = jsonEncode({});
+      final response = await client.post(likeUri, body: req, headers: {
+        'Content-Type': 'application/json'
+      });
+      final res = jsonDecode(response.body);
+      if (res['status']==false){
+      setState(() {
+        if(isLiked == false){
+            isLiked = true;
+            numLikes+=1;
+          
         }
         else{
-          setState(() {
+            isLiked = false;
+            numLikes-=1;
+        }
+      });
+      }
+    }
+    void handleDislike()async{
+            setState(() {
+        if(isDisliked == true){
+            isDisliked = false;
+            numDislikes-=1;
+        }
+        else{
             isDisliked = true;
             numDislikes+=1;
             if(isLiked){
               isLiked = false;
               numLikes -= 1;
             }
-          });
         }
       });
+        Uri likeUri = Uri.parse(baseUrl+'post/dislike');
+      final req = jsonEncode({});
+      final response = await client.post(likeUri, body: req, headers: {
+        'Content-Type': 'application/json'
+      });
+      final res = jsonDecode(response.body);
+      if(res['status']==false){
+                    setState(() {
+        if(isDisliked == false){
+            isDisliked = true;
+            numDislikes+=1;
+        }
+        else{
+            isDisliked = false;
+            numDislikes-=1;
+        }
+      });
+      }
+
     }
     Future? handleCommentSectionOpen(){
-      // return showModalBottomSheet(context: context, isScrollControlled: true, builder: (context)=>
-      // FractionallySizedBox(
-      //   heightFactor: 0.8,
-      //   child: Container(
-      //     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      //     decoration: const BoxDecoration(
-            
-      //       color: Color(0xFF111111),
-      //       borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
-      //     ),
-      //     child: Comments()
-      //   ),
-      // ));
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>CommentsScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>CommentsScreen(postId: "",)));
     }
     Function? handlePdf(){}
     var postActions = [
@@ -139,7 +161,7 @@ class _PostsState extends State<Posts> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CompanyProfile(),
+                      builder: (context) => CompanyProfile(id: '', isFollowing: true,),
                     ),
                   );
                 },

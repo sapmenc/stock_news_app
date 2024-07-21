@@ -5,6 +5,8 @@ import 'package:stock_news_app_frontend/Screens/Onboarding/screen_2.dart';
 class Screen1 extends StatelessWidget {
   const Screen1({super.key});
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,34 +24,6 @@ class Screen1 extends StatelessWidget {
           
           children: [
             const Padding(padding: EdgeInsets.only(top: 60)),
-            // Container(
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(5),
-            //     color: Colors.grey[400],
-            //   ),
-            //   width: 100,
-            //   height: 40,
-            //   alignment: Alignment.center, // Center the text within the container
-            //   child: const Text(
-            //     "Logo",
-            //     textAlign: TextAlign.center,
-            //   ),
-            // ),
-            // SizedBox(height: 30), // Add some spacing between containers
-            // Container(
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(20),
-            //     color: Colors.grey[400],
-            //   ),
-            //   width: 280,
-            //   height: 250,
-            //   padding: const EdgeInsets.all(5),
-            //   alignment: Alignment.center, // Center the text within the container
-            //   child: const Text(
-            //     "Asset",
-            //     textAlign: TextAlign.center,
-            //   ),
-            // ),
             Image.asset('assets/screen1_img.png'),
             SizedBox(height: 40), // Add some spacing between containers
             Container(

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/Interests/_components/category.dart';
 import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 import 'package:http/http.dart' as http;
@@ -25,21 +27,21 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
   }
 
   void fetchCompanies() async {
+
     final client = http.Client();
-    Uri fetch_companies = Uri.parse(base_url + "/company/industry");
-    print(
-        "fetch companies: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5: ");
+    Uri fetch_companies = Uri.parse(baseUrl + "company/industry");
+   
     print(fetch_companies);
     final response = await http.get(fetch_companies);
-    print("#############################################");
     // final res = jsonDecode(response.body);
     print(response.body);
-    // setState(() {
-    //   categories = res['data'];
-    // });
-    // categories.forEach((key, value) {
-    //   print(value);
-    // });
+    final res = jsonDecode(response.body);
+    setState(() {
+      categories = res['data'];
+    });
+    categories.forEach((key, value) {
+      print(value);
+    });
   }
 
   @override
@@ -72,8 +74,9 @@ class _InterestedCompaniesState extends State<InterestedCompanies> {
               ElevatedButton(
                 onPressed: () async {
                   final client = http.Client();
-                  Uri user = Uri.parse(base_url + "/user/email");
-                  final req = jsonEncode({"email": "mdareeb176@gmail.com"});
+                  final email = FirebaseAuth.instance.currentUser!.email;
+                  Uri user = Uri.parse(base_url + "user/email");
+                  final req = jsonEncode({"email": email});
                   final response = await client.post(
                     user,
                     body: req,

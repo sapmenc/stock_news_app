@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 
 class CategoryCompany extends StatefulWidget {
@@ -17,13 +18,15 @@ class CategoryCompany extends StatefulWidget {
 class _CategoryCompanyState extends State<CategoryCompany> {
   bool isFollowing = false;
   final client = http.Client();
+  
   void toggleFollow() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final userId = sharedPreferences.getString('userId');
     final base_url = '$baseUrl';
-    Uri follow = Uri.parse(base_url + "/company/follow");
-    Uri unfollow = Uri.parse(base_url + "/company/unfollow");
+    Uri follow = Uri.parse(base_url + "company/follow");
+    Uri unfollow = Uri.parse(base_url + "company/unfollow");
     final req = jsonEncode(
-        {"userId": "6696b137ced75a872b643214", "companyId": widget.id});
-    print("3333333333333333333333333333333333333333333333333333");
+        {"userId": userId, "companyId": widget.id});
     print(widget.id);
     if (isFollowing) {
       setState(() {
@@ -58,12 +61,12 @@ class _CategoryCompanyState extends State<CategoryCompany> {
       );
 
       print(response.body);
-      final res = jsonDecode(response.body);
-      if (res['status'] == false) {
-        setState(() {
-          isFollowing = !isFollowing;
-        });
-      }
+      // final res = jsonDecode(response.body);
+      // if (res['status'] == false) {
+      //   setState(() {
+      //     isFollowing = !isFollowing;
+      //   });
+      // }
     }
   }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,37 +53,36 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _submitForm() async {
-    // await Firebase.initializeApp();
-    if (_formKey.currentState!.validate()) {
-      // Process the login
-      print(_emailController.value);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Processing Data')),
-      );
+    if (_formKey.currentState!.validate()) {  
       try {
-        // Uri uri = Uri.parse(base_url);
-        // final response = await client.get(uri);
-        // print("#######################################################");
-        // print(response.body);
-        if (_emailController.text == "mdareeb176@gmail.com" &&
-            _passwordController.text == "test01@123") {
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          sharedPreferences.setString('email', 'mdareeb176@gmail.com');
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => InterestedCompanies()));
+       
 
-          // if(true){
-          //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
-          // }
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
-        } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Invalid credentials")));
+        await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+        print("22222222222222222222222222222222222222222222");
+        print(FirebaseAuth.instance.currentUser);
+         Uri fetchUserUrl = Uri.parse(baseUrl + 'user/email');
+        final req = jsonEncode({
+          'email': FirebaseAuth.instance.currentUser!.email
+        });
+        final response = await client.post(
+      fetchUserUrl,
+      body: req,
+      headers: {
+        'Content-Type': 'application/json', // Add this header
+      },
+    );
+
+    print(response.body);
+    final res = jsonDecode(response.body);
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString("userId", res['data']['_id']);
+    if (res['data']['following'].length == 0){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
+    }
+        else{
+
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
         }
-
-        // UserCredential usercreds = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.value as String, password: _passwordController.value as String);
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
       } catch (e) {
         print(e);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -178,6 +178,7 @@ class _LoginFormState extends State<LoginForm> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
+           
               SizedBox(height: 20),
               // Divider(),
               Text(
