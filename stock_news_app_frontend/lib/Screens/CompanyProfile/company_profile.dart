@@ -26,16 +26,17 @@ class _CompanyProfileState extends State<CompanyProfile> {
   final base_url = '${baseUrl}';
   final client = http.Client();
   void getpostbyCompanyName() async {
-    // print(widget.name);
+    print("ppppppppppppppppppppppppppppppppppppppppppp");
+    print('Widget Id: ${widget.id}');
     Uri companyposturi =
         Uri.parse(baseUrl + 'post/companyName?page=1&limit=25');
     final req = jsonEncode({"companyName": widget.name});
     final response = await client.post(companyposturi,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print(response.body);
+    // print(response.body);
     final res = jsonDecode(response.body);
-    print('11111111111111111111111111111111111111111');
-    print(res['data']['company'][0]);
+    // print('11111111111111111111111111111111111111111');
+    // print(res['data']['company'][0]);
     setState(() {
       companyPosts = res['data']['posts'];
       companyData = res['data']['company'][0];
@@ -84,8 +85,9 @@ class _CompanyProfileState extends State<CompanyProfile> {
                             likes: e['likes'],
                             dislikes: e['dislikes'],
                             pdf: e['pdf'],
-                            logo: companyData[
-                                'logo']); // Replace with your actual widget
+                            logo: companyData['logo'],
+                            companyId: companyData['_id']);
+                        // Replace with your actual widget
                       }).toList()
                     : [Container()] // Wrap the single widget in a list
               ],

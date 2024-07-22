@@ -21,8 +21,8 @@ class _HomeState extends State<Home> {
     // print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     Uri fetchposts = Uri.parse(baseUrl + 'post/company?page=1&limit=25');
     // print(FirebaseAuth.instance.currentUser!.email);
-    final req =
-        jsonEncode({"userEmail": FirebaseAuth.instance.currentUser!.email as String});
+    final req = jsonEncode(
+        {"userEmail": FirebaseAuth.instance.currentUser!.email as String});
     final response = await client.post(fetchposts,
         body: req, headers: {'Content-Type': 'Application/json'});
     print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
@@ -44,7 +44,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/Alpha-logo.png', scale: 7,),
+        title: Image.asset(
+          'assets/Alpha-logo.png',
+          scale: 7,
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -58,8 +61,20 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: postData != null && postData.isNotEmpty
                   ? postData.map((e) {
-                    // print(e);
-                      return Posts(id:e['_id'], logo:e['companyDetails']['logo'], title: e['title'], description: e['content'], name: e['companyName'], numLikes: e['numLikes'], numDislikes: e['numDislikes'], numComments: e['numComments'], likes: e['likes'], dislikes: e['dislikes'], pdf: e['pdf']);
+                      // print(e);
+                      return Posts(
+                          id: e['_id'],
+                          logo: e['companyDetails']['logo'],
+                          title: e['title'],
+                          description: e['content'],
+                          name: e['companyName'],
+                          numLikes: e['numLikes'],
+                          numDislikes: e['numDislikes'],
+                          numComments: e['numComments'],
+                          likes: e['likes'],
+                          dislikes: e['dislikes'],
+                          pdf: e['pdf'],
+                          companyId: e['companyDetails']['_id']);
                     }).toList()
                   : [
                       Container()

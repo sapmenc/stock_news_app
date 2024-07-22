@@ -9,7 +9,8 @@ class CompanyDetails extends StatefulWidget {
   final bool isFollowing;
   final String id;
 
-  const CompanyDetails({super.key, required this.isFollowing, required this.id});
+  const CompanyDetails(
+      {super.key, required this.isFollowing, required this.id});
 
   @override
   State<CompanyDetails> createState() => _CompanyDetailsState();
@@ -22,10 +23,13 @@ class _CompanyDetailsState extends State<CompanyDetails> {
 
   void fetchCompanyData() async {
     Uri companyUri = Uri.parse(baseUrl + 'company/id');
-    final req = jsonEncode({"companyId": widget.id});
+    print(widget.id);
+    final req = jsonEncode({"companyId": widget.id as String});
     final response = await client.post(companyUri,
         body: req, headers: {'Content-Type': 'application/json'});
     final res = jsonDecode(response.body);
+    print("111111111111111111111111111111111111111111111111");
+    print(response.body);
     setState(() {
       companyData = res['data'];
     });
@@ -109,7 +113,8 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        constraints: BoxConstraints(maxWidth: screenWidth * 0.7),
+                        constraints:
+                            BoxConstraints(maxWidth: screenWidth * 0.7),
                         child: Text(
                           companyData['name'] ?? '',
                           softWrap: true,
@@ -125,14 +130,16 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("${(companyData['post'] ?? []).length} articles"),
+                          Text(
+                              "${(companyData['post'] ?? []).length} articles"),
                           ElevatedButton(
                               onPressed: () {
                                 toggleFollow();
                               },
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20), // <-- Radius
+                                  borderRadius:
+                                      BorderRadius.circular(20), // <-- Radius
                                 ),
                                 padding: EdgeInsets.symmetric(
                                     horizontal: !isFollowing ? 40 : 36.6,

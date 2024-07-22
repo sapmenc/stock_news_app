@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/_components/Comment.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
+
 class Comments extends StatefulWidget {
   final id;
   const Comments({super.key, required this.id});
@@ -15,55 +16,52 @@ class Comments extends StatefulWidget {
 }
 
 class _CommentsState extends State<Comments> {
-    final client = http.Client();
-    final _commentController = TextEditingController();
+  final client = http.Client();
+  final _commentController = TextEditingController();
   List? commentData = [];
-  void fetchComments()async{
+  void fetchComments() async {
+    Uri fetchcomments =
+        Uri.parse(baseUrl + 'post/comments/page?page=1&limit=25');
+    final req = jsonEncode({"postId": widget.id});
 
-    Uri fetchcomments = Uri.parse(baseUrl+'post/comments/page?page=1&limit=25');
-    final req = jsonEncode({
-      "postId": widget.id
-    });
+    final response = await client.post(fetchcomments,
+        body: req, headers: {"Content-Type": "application/json"});
+    final res = jsonDecode(response.body);
+    // print(res);
 
-    final response = await client.post(fetchcomments, body: req, headers: {
-"Content-Type": "application/json"   
-});
-  final res = jsonDecode(response.body);
-  print(res);
-  
-  if (res['status']){
-    setState(() {
-      commentData = res['data']['comments'];
-    });
+    if (res['status']) {
+      setState(() {
+        commentData = res['data']['comments'];
+      });
+    }
   }
 
-  }
-  void createComment()async{
-        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  void createComment() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final userId = sharedPreferences.getString("userId");
 // print("111111111111111111111111111111111111");
 // print(_commentController.text);
-Uri commentUri = Uri.parse(baseUrl+'post/comment');
-final req = jsonEncode({
-  "postId": widget.id,
-  "comment": _commentController.text,
-  "userId": userId
-});
-final response = await client.post(commentUri, body: req, headers: {
-  'Content-Type': 'Application/json'
-});
+    Uri commentUri = Uri.parse(baseUrl + 'post/comment');
+    final req = jsonEncode({
+      "postId": widget.id,
+      "comment": _commentController.text,
+      "userId": userId
+    });
+    final response = await client.post(commentUri,
+        body: req, headers: {'Content-Type': 'Application/json'});
 // print(response.body);
-final res = jsonDecode(response.body);
-_commentController.clear();
-fetchComments();
-
+    final res = jsonDecode(response.body);
+    _commentController.clear();
+    fetchComments();
   }
+
   @override
   void initState() {
     fetchComments();
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
@@ -73,7 +71,7 @@ fetchComments();
         children: [
           Row(
             children: [
-               Expanded(
+              Expanded(
                 child: TextField(
                   controller: _commentController,
                   cursorColor: Colors.white,
@@ -90,42 +88,50 @@ fetchComments();
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color(0xFF515151), // Change border color for enabled state
+                        color: Color(
+                            0xFF515151), // Change border color for enabled state
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color(0xFF515151), // Change border color for focused state
+                        color: Color(
+                            0xFF515151), // Change border color for focused state
                       ),
                     ),
                   ),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(left: 5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color.fromARGB(150, 158, 158, 158)),
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: IconButton(onPressed: () {
-                  createComment();
-                }, icon: SvgPicture.asset('assets/CommentButton.svg')))
+                  margin: EdgeInsets.only(left: 5),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: const Color.fromARGB(150, 158, 158, 158)),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: IconButton(
+                      onPressed: () {
+                        createComment();
+                      },
+                      icon: SvgPicture.asset('assets/CommentButton.svg')))
             ],
           ),
           SizedBox(height: 10), // Add some space between the input and comments
- Column(
-  mainAxisSize: MainAxisSize.max,
-  children: commentData!.isNotEmpty
-      ? commentData!.map((e) {
-        // print("1111111111111111111111111");
-        // print(e['comment']);
-          return Container(
-            // height: double.infinity,
-            child: Comment(name: e['userId']['name'], comment: e['comment'],)); // Replace with your actual widget
-        }).toList()
-      : [Text("No comments yet!")], // Wrap the single widget in a list
-)
-
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            children: commentData!.isNotEmpty
+                ? commentData!.map((e) {
+                    // print("1111111111111111111111111");
+                    // print(e['comment']);
+                    return Container(
+                        // height: double.infinity,
+                        child: Comment(
+                      name: e['userId']['name'],
+                      comment: e['comment'],
+                    )); // Replace with your actual widget
+                  }).toList()
+                : [
+                    Text("No comments yet!")
+                  ], // Wrap the single widget in a list
+          )
         ],
       ),
     );

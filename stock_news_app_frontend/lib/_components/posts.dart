@@ -11,7 +11,7 @@ import 'package:stock_news_app_frontend/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Posts extends StatefulWidget {
-    final String id;
+  final String id;
   final String title;
   final String description;
   final String name;
@@ -22,8 +22,11 @@ class Posts extends StatefulWidget {
   final List dislikes;
   final String pdf;
   final String logo;
-  const Posts({super.key, required this.id,
-  required this.logo,
+  final String companyId;
+  const Posts({
+    super.key,
+    required this.id,
+    required this.logo,
     required this.title,
     required this.description,
     required this.name,
@@ -33,7 +36,8 @@ class Posts extends StatefulWidget {
     required this.likes,
     required this.dislikes,
     required this.pdf,
-});
+    required this.companyId,
+  });
 
   @override
   State<Posts> createState() => _PostsState();
@@ -48,29 +52,56 @@ class _PostsState extends State<Posts> {
   bool isLiked = false;
   bool isDisliked = false;
   String? userId = null;
-  void setVariables()async{
+  bool showReadMore = false;
+  void setVariables() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final user_Id = sharedPreferences.getString('userId');
-    
+
     // print("11111111111111111111111111111111111111111111111111111111");
     // print(userId);
     setState(() {
-      numLikes= widget.numLikes;
-      userId= user_Id;
-      numDislikes= widget.numDislikes;
-      numComments= widget.numComments;
-      if (widget.likes.contains(userId)){
-        isLiked= true;
+      numLikes = widget.numLikes;
+      userId = user_Id;
+      numDislikes = widget.numDislikes;
+      numComments = widget.numComments;
+      if (widget.likes.contains(userId)) {
+        isLiked = true;
       }
-      if (widget.dislikes.contains(userId)){
-        isDisliked= true;
+      if (widget.dislikes.contains(userId)) {
+        isDisliked = true;
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkTextHeight();
+    });
   }
+
+  void _checkTextHeight() {
+    print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+    final textSpan = TextSpan(
+      text: widget.description,
+      style: const TextStyle(fontSize: 13),
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      maxLines: 3,
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout(maxWidth: MediaQuery.of(context).size.width);
+
+    if (textPainter.didExceedMaxLines) {
+      setState(() {
+        showReadMore = true;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-  setVariables();
+    setVariables();
     super.initState();
   }
 
@@ -92,20 +123,16 @@ class _PostsState extends State<Posts> {
           }
         }
       });
-      Uri likeUri = Uri.parse(baseUrl+'post/like');
-      final req = jsonEncode({
-        "userId": userId,
-        "postId": widget.id
-      });
+      Uri likeUri = Uri.parse(baseUrl + 'post/like');
+      final req = jsonEncode({"userId": userId, "postId": widget.id});
       // print(req);
-      final response = await client.post(likeUri, body: req, headers: {
-        'Content-Type': 'application/json'
-      });
+      final response = await client.post(likeUri,
+          body: req, headers: {'Content-Type': 'application/json'});
       final res = jsonDecode(response.body);
       // print(res);
-      if (res['status']==false){
-      setState(() {
-        if(isLiked == false){
+      if (res['status'] == false) {
+        setState(() {
+          if (isLiked == false) {
             isLiked = true;
             numLikes += 1;
           } else {
@@ -130,19 +157,15 @@ class _PostsState extends State<Posts> {
           }
         }
       });
-        Uri likeUri = Uri.parse(baseUrl+'post/dislike');
-      final req = jsonEncode({
-        "userId": userId,
-        "postId": widget.id
-      });
-      final response = await client.post(likeUri, body: req, headers: {
-        'Content-Type': 'application/json'
-      });
+      Uri likeUri = Uri.parse(baseUrl + 'post/dislike');
+      final req = jsonEncode({"userId": userId, "postId": widget.id});
+      final response = await client.post(likeUri,
+          body: req, headers: {'Content-Type': 'application/json'});
       final res = jsonDecode(response.body);
-      print(res);
-      if(res['status']==false){
-                    setState(() {
-        if(isDisliked == false){
+      // print(res);
+      if (res['status'] == false) {
+        setState(() {
+          if (isDisliked == false) {
             isDisliked = true;
             numDislikes += 1;
           } else {
@@ -195,7 +218,7 @@ class _PostsState extends State<Posts> {
         'label': 'Comment',
         'isActive': false,
         'activeColor': Color(0xFFFFFFFF),
-        'num': 0,
+        'num': numComments,
         'handleClick': handleCommentSectionOpen
       },
       {
@@ -235,19 +258,18 @@ class _PostsState extends State<Posts> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => CompanyProfile(
-                        id: '',
+                        id: widget.companyId,
                         name: widget.name,
                         isFollowing: true,
                       ),
                     ),
                   );
                 },
-                child:  Row(
+                child: Row(
                   children: [
                     CircleAvatar(
                       backgroundColor: Colors.grey,
-                      backgroundImage:
-                          NetworkImage(widget.logo),
+                      backgroundImage: NetworkImage(widget.logo),
                     ),
                     SizedBox(width: 10),
                     Container(
@@ -305,12 +327,13 @@ class _PostsState extends State<Posts> {
                           ? TextOverflow.visible
                           : TextOverflow.ellipsis,
                     ),
-                    Text(
-                      isExpanded ? "Read less" : "Read more",
-                      style: const TextStyle(
-                          fontSize: 13,
-                          color: Color.fromARGB(255, 42, 119, 245)),
-                    )
+                    if (showReadMore)
+                      Text(
+                        isExpanded ? "Read less" : "Read more",
+                        style: const TextStyle(
+                            fontSize: 13,
+                            color: Color.fromARGB(255, 42, 119, 245)),
+                      )
                   ]),
             ),
           ),
