@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/_components/Comment.dart';
+import 'package:stock_news_app_frontend/_components/posts.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,6 +20,7 @@ class _CommentsState extends State<Comments> {
   final client = http.Client();
   final _commentController = TextEditingController();
   List? commentData = [];
+  var postData = {};
   void fetchComments() async {
     Uri fetchcomments =
         Uri.parse(baseUrl + 'post/comments/page?page=1&limit=25');
@@ -27,11 +29,13 @@ class _CommentsState extends State<Comments> {
     final response = await client.post(fetchcomments,
         body: req, headers: {"Content-Type": "application/json"});
     final res = jsonDecode(response.body);
-    // print(res);
+    print("#############################");
+    print(res);
 
     if (res['status']) {
       setState(() {
         commentData = res['data']['comments'];
+        postData = res['data'];
       });
     }
   }
@@ -69,6 +73,22 @@ class _CommentsState extends State<Comments> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          postData.isNotEmpty
+              ? Posts(
+                  id: postData['_id'],
+                  logo: postData['companyData'][0]['logo'],
+                  title: postData['title'],
+                  description: postData['companyData'][0]['description'],
+                  name: postData['companyName'],
+                  numLikes: postData['numLikes'],
+                  numDislikes: postData['numDislikes'],
+                  numComments: postData['numComments'],
+                  likes: postData['likes'],
+                  dislikes: postData['dislikes'],
+                  pdf: postData['pdf'],
+                  companyId: postData['companyData'][0]['_id'],
+                )
+              : Container(),
           Row(
             children: [
               Expanded(
