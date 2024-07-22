@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/auth/login.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/auth/otp.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/auth/signup.dart';
-// import 'package:stock_news_app_frontend/Screens/main_screen.dart';
-// import 'package:stock_news_app_frontend/main.dart';
+
 import 'dart:ui' as ui show ImageFilter;
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Screen2 extends StatefulWidget {
   const Screen2({super.key});
@@ -51,7 +47,7 @@ class _Screen2State extends State<Screen2> {
                       ),
                     ),
                     child: value == 'login'
-                        ? LoginForm()
+                        ? LoginForm(updateAuthState: _updateStateVariable,)
                         : value == 'sign-up'
                             ? SignUpForm(
                                 updateAuthState: _updateStateVariable,
@@ -66,22 +62,6 @@ class _Screen2State extends State<Screen2> {
       },
     );
   }
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   redirect();
-  //   super.initState();
-  // }
-  // void redirect()async{
-  //   SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
-  //   final email = sharedPreferences.getString('email');
-  //   print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-  //   print(email);
-  //   if (email=="mdareeb176@gmail.com"){
-  //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
-  //   }
-
-  // }
   @override
   Widget build(BuildContext context) {
 

@@ -1,56 +1,84 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 
 class OtpVerification extends StatefulWidget {
-  const OtpVerification({super.key});
-
   @override
-  State<OtpVerification> createState() => _OtpVerificationState();
+  _OtpVerificationState createState() => _OtpVerificationState();
 }
 
 class _OtpVerificationState extends State<OtpVerification> {
+  late User user;
+  late Timer timer;
+  late Timer deleteAccountTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser!;
+    user.sendEmailVerification();
+
+    // Check if the user is verified every 5 seconds
+    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      checkEmailVerification();
+    });
+
+        deleteAccountTimer = Timer(Duration(seconds: 20), () {
+      deleteUser();
+          Fluttertoast.showToast(msg: "Error signing uo");
+
+      Navigator.pop(context);
+    });
+
+  }
+  
+
+  Future<void> checkEmailVerification() async {
+    user = FirebaseAuth.instance.currentUser!;
+    await user.reload();
+    if (user.emailVerified) {
+      timer.cancel();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return const Scaffold(
+      backgroundColor: Colors.transparent,
 
-        children: [
-          Text("Enter the OTP sent to your Email", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-          OtpTextField(
-            numberOfFields: 6,
-            fillColor: Color.fromARGB(97, 0, 0, 0),
-            showFieldAsBox: true,
-            borderColor: Colors.transparent,
-            disabledBorderColor: Colors.transparent,
-            focusedBorderColor: Colors.transparent,
-            borderWidth: 1,
-            enabledBorderColor: Colors.transparent,
-            keyboardType: TextInputType.number,
-            filled: true,
-            onSubmit: (code){
-              // print("22222222222222222222222222222222222222222222222222222222222222222222 otp is ${code}");
-            },
-            
-          ),
-          SizedBox(height: 30,),
-                        ElevatedButton(
-                onPressed: (){},
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF6A6A6A),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10))),
-                child: Text(
-                  'Verify',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-           
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              textAlign: TextAlign.center,
+              'An email verification link has been sent to your email address. Please verify your email to continue.',
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20,),
+            CircularProgressIndicator()
+          ],
+        ),
       ),
     );
+  }
+}
+
+Future<void> deleteUser() async {
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    await user.delete();
   }
 }

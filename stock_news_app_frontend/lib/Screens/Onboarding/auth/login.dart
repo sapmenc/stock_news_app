@@ -12,6 +12,9 @@ import 'package:http/http.dart' as http;
 import '../../../utils.dart';
 
 class LoginForm extends StatefulWidget {
+    final Function(String) updateAuthState;
+  const LoginForm({super.key, required this.updateAuthState});
+
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -57,9 +60,8 @@ class _LoginFormState extends State<LoginForm> {
       try {
        
 
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-        // print("22222222222222222222222222222222222222222222");
-        // print(FirebaseAuth.instance.currentUser);
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+        
          Uri fetchUserUrl = Uri.parse(baseUrl + 'user/email');
         final req = jsonEncode({
           "email": FirebaseAuth.instance.currentUser!.email as String
@@ -187,45 +189,36 @@ class _LoginFormState extends State<LoginForm> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle Google login
-                    },
-                    child: FaIcon(FontAwesomeIcons.google, color: Colors.white),
-                    style: ElevatedButton.styleFrom(
-                      side: BorderSide(
-                          color: const Color.fromARGB(91, 255, 255, 255),
-                          width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.all(18),
-                      backgroundColor: Colors.transparent,
-                    ),
+              Container(
+                width: 200,
+                constraints: BoxConstraints(maxWidth: double.infinity),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Handle Google login
+                  },
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(
+                        color: const Color.fromARGB(91, 255, 255, 255),
+                        width: 1),
+                    // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+                    padding: EdgeInsets.all(10),
+                    backgroundColor: Colors.transparent,
                   ),
-                  SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle Google login
-                    },
-                    child:
-                        FaIcon(FontAwesomeIcons.microsoft, color: Colors.white),
-                    style: ElevatedButton.styleFrom(
-                      side: BorderSide(
-                          color: const Color.fromARGB(91, 255, 255, 255),
-                          width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/Google_icon.png',
+                        scale: 2,
                       ),
-                      padding: EdgeInsets.all(18),
-                      backgroundColor: Colors.transparent,
-                    ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text("Continue with Google")
+                    ],
                   ),
-                ],
+                ),
               ),
+        
             ],
           ),
         ),
