@@ -48,6 +48,7 @@ class _PostsState extends State<Posts> {
   bool isExpanded = false;
   int numLikes = 0;
   int numComments = 0;
+  String pdf = "";
   int numDislikes = 0;
   bool isLiked = false;
   bool isDisliked = false;
@@ -64,6 +65,7 @@ class _PostsState extends State<Posts> {
       userId = user_Id;
       numDislikes = widget.numDislikes;
       numComments = widget.numComments;
+      pdf = widget.pdf;
       if (widget.likes.contains(userId)) {
         isLiked = true;
       }
@@ -185,15 +187,19 @@ class _PostsState extends State<Posts> {
                   )));
     }
 
-    void handlePdf() async {
-      const Pdfurl =
-          "https://nsearchives.nseindia.com/corporate/xbrl/NESCO_01012024014219_CIM_15614_1005823_01012024014219_WEB.xml";
-      final Uri url = Uri.parse(Pdfurl);
+    Future? handlePdf(String pdf) async {
+      final Uri url = Uri.parse(pdf);
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
         throw 'Could not launch $url';
       }
+    }
+
+    void Function() createHandleClick(String pdf) {
+      return () async {
+        await handlePdf(pdf);
+      };
     }
 
     var postActions = [
@@ -227,7 +233,7 @@ class _PostsState extends State<Posts> {
         'isActive': false,
         'activeColor': Color(0xFFFFFFFF),
         'num': null,
-        'handleClick': handlePdf
+        'handleClick': createHandleClick(pdf),
       },
     ];
 
