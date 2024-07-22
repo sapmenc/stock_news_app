@@ -10,6 +10,7 @@ import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.d
 import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 import 'package:http/http.dart' as http;
 import '../../../utils.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginForm extends StatefulWidget {
     final Function(String) updateAuthState;
@@ -33,6 +34,38 @@ class _LoginFormState extends State<LoginForm> {
     _passwordController.dispose();
     super.dispose();
   }
+
+  Future signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  print('11111111111111111111111111111111111111111111111111');
+  print(userCredential.user!.displayName);
+  // if (userCredential.user!.displayName!=null && userCredential.user!.email!=null){
+  //   Uri createUser = Uri.parse('${baseUrl}' + 'user');
+  //   final req = jsonEncode(
+  //       {'name': userCredential.user!.displayName, 'email': userCredential.user!.email});
+  //   final response = await client.post(
+  //     createUser,
+  //     body: req,
+  //     headers: {
+  //       'Content-Type': 'application/json', // Add this header
+  //     },
+  //   );
+  //   Navigator.pushReplacement(context, (MaterialPageRoute(builder: (context)=>)))
+  // }
+}
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -89,7 +122,7 @@ class _LoginFormState extends State<LoginForm> {
       } catch (e) {
         // print(e);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Processing Data')),
+          SnackBar(content: Text('Error logging in')),
         );
       }
     }
@@ -195,6 +228,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Handle Google login
+                    signInWithGoogle();
                   },
                   style: ElevatedButton.styleFrom(
                     side: BorderSide(

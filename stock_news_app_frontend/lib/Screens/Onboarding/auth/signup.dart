@@ -114,6 +114,7 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
 
+
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
