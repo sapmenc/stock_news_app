@@ -2,15 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
-// import 'package:stock_news_app_frontend/Screens/Onboarding/auth/otp.dart';
-import 'package:stock_news_app_frontend/Screens/main_screen.dart';
+import 'package:stock_news_app_frontend/Screens/Onboarding/auth/google-sign-in.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -62,15 +61,22 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> checkEmailVerification() async {
-    print("333333333333333333333333333333333333333333333333333");
     user = FirebaseAuth.instance.currentUser!;
     await user.reload();
     if (user.emailVerified) {
-      print(
-          "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
       createUserinDb();
     }
   }
+  void signInWithGoogle() async {
+    print(FirebaseAuth.instance.currentUser);
+    if (await googleSignIn()){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyApp()));
+    }
+    else{
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: "Error signing in");
+    }
+}
 
   @override
   void dispose() {
@@ -78,8 +84,8 @@ class _SignUpFormState extends State<SignUpForm> {
     _passwordController.dispose();
     _fullNameController.dispose();
     _confirmPasswordController.dispose();
-    timer.cancel();
-    deleteAccountTimer.cancel();
+    // timer.cancel();
+    // deleteAccountTimer.cancel();
     super.dispose();
   }
 
@@ -354,6 +360,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       child: ElevatedButton(
                         onPressed: () {
                           // Handle Google login
+                    signInWithGoogle();
                         },
                         style: ElevatedButton.styleFrom(
                           side: BorderSide(

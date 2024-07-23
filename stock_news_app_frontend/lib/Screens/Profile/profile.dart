@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
@@ -212,6 +213,7 @@ class _ProfileState extends State<Profile> {
                     child: ElevatedButton(
                       onPressed: () async {
                         await FirebaseAuth.instance.signOut();
+                        await GoogleSignIn().signOut();
                         SharedPreferences sharedPreferences =
                             await SharedPreferences.getInstance();
                         await sharedPreferences.clear();
