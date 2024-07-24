@@ -23,21 +23,22 @@ class Posts extends StatefulWidget {
   final String pdf;
   final String logo;
   final String companyId;
-  const Posts({
-    super.key,
-    required this.id,
-    required this.logo,
-    required this.title,
-    required this.description,
-    required this.name,
-    required this.numLikes,
-    required this.numDislikes,
-    required this.numComments,
-    required this.likes,
-    required this.dislikes,
-    required this.pdf,
-    required this.companyId,
-  });
+  final String createdAt;
+  const Posts(
+      {super.key,
+      required this.id,
+      required this.logo,
+      required this.title,
+      required this.description,
+      required this.name,
+      required this.numLikes,
+      required this.numDislikes,
+      required this.numComments,
+      required this.likes,
+      required this.dislikes,
+      required this.pdf,
+      required this.companyId,
+      required this.createdAt});
 
   @override
   State<Posts> createState() => _PostsState();
@@ -279,7 +280,7 @@ class _PostsState extends State<Posts> {
                     ),
                     SizedBox(width: 10),
                     Container(
-                      constraints: BoxConstraints(maxWidth: 200),
+                      constraints: BoxConstraints(maxWidth: 150),
                       child: Text(
                         widget.name,
                         style: const TextStyle(
@@ -293,8 +294,8 @@ class _PostsState extends State<Posts> {
                   ],
                 ),
               ),
-              const Text(
-                "10m ago",
+              Text(
+                '${widget.createdAt.substring(0, 10).split('-').reversed.join('-')} | ${widget.createdAt.substring(11, 19)}',
                 style: TextStyle(color: Color(0xFF7D7D7D), fontSize: 12),
               ),
             ],
