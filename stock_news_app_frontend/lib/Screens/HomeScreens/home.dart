@@ -78,7 +78,8 @@ class _HomeState extends State<Home> {
                             likes: e['likes'],
                             dislikes: e['dislikes'],
                             pdf: e['pdf'],
-                            companyId: e['companyDetails']['_id']);
+                            companyId: e['companyDetails']['_id'],
+                          createdAt: e['date']);
                       }).toList()
                     : [
                         Container()

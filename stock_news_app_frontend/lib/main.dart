@@ -44,8 +44,10 @@ class _MyAppState extends State<MyApp> {
     try {
       Uri userUri = Uri.parse('${baseUrl}' + 'user/email');
       if (FirebaseAuth.instance.currentUser != null) {
-        final req = jsonEncode({'email': FirebaseAuth.instance.currentUser!.email});
-        final response = await client.post(userUri, body: req, headers: {'Content-Type': 'application/json'});
+        final req =
+            jsonEncode({'email': FirebaseAuth.instance.currentUser!.email});
+        final response = await client.post(userUri,
+            body: req, headers: {'Content-Type': 'application/json'});
         final res = jsonDecode(response.body);
 
         if (res['data']['following'].length == 0) {

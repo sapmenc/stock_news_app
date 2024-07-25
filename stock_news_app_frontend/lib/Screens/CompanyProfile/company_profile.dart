@@ -90,7 +90,8 @@ class _CompanyProfileState extends State<CompanyProfile> {
                               dislikes: e['dislikes'],
                               pdf: e['pdf'],
                               logo: companyData['logo'],
-                              companyId: companyData['_id']);
+                              companyId: companyData['_id'],
+                            createdAt: e['date']);
                           // Replace with your actual widget
                         }).toList()
                       : [Container()] // Wrap the single widget in a list

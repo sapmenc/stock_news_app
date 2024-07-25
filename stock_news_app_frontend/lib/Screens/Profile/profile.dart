@@ -56,7 +56,10 @@ class _ProfileState extends State<Profile> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Image.asset('assets/Alpha-logo.png', scale: 7,),
+          title: Image.asset(
+            'assets/Alpha-logo.png',
+            scale: 7,
+          ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0.0,
@@ -178,15 +181,21 @@ class _ProfileState extends State<Profile> {
                             children: companies.isNotEmpty
                                 ? companies.map((e) {
                                     return GestureDetector(
-                                      onTap: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CompanyProfile(id: e['_id'], isFollowing: true, name: '',)));
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CompanyProfile(
+                                                    id: e['_id'],
+                                                    isFollowing: true,
+                                                    name: e['name'],
+                                                  )));
                                       },
                                       child: Column(
-                                        
-                                        children: [
+                                          children: [
                                           CircleAvatar(
-                                            
-                                            backgroundColor:
+                                              backgroundColor:
                                                 Color.fromARGB(255, 42, 41, 41),
                                             foregroundImage:
                                                 NetworkImage(e['logo']),

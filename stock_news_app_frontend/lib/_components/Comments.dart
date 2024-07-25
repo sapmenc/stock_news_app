@@ -87,6 +87,7 @@ class _CommentsState extends State<Comments> {
                   dislikes: postData['dislikes'],
                   pdf: postData['pdf'],
                   companyId: postData['companyData'][0]['_id'],
+                  createdAt: postData['date'],
                 )
               : Container(),
           Row(
