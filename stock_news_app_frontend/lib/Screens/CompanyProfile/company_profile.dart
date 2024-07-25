@@ -66,31 +66,36 @@ class _CompanyProfileState extends State<CompanyProfile> {
             Navigator.pop(context);
           }),
         ),
-        body: SingleChildScrollView(
-            padding: EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 60),
-            child: Column(
-              children: [
-                CompanyDetails(isFollowing: widget.isFollowing, id: widget.id),
-                ...companyPosts.isNotEmpty
-                    ? companyPosts.map((e) {
-                        print(e);
-                        return Posts(
-                            id: e['_id'],
-                            title: e['title'],
-                            description: e['content'],
-                            name: e['companyName'],
-                            numLikes: e['numLikes'],
-                            numDislikes: e['numDislikes'],
-                            numComments: e['numComments'],
-                            likes: e['likes'],
-                            dislikes: e['dislikes'],
-                            pdf: e['pdf'],
-                            logo: companyData['logo'],
-                            companyId: companyData['_id']);
-                        // Replace with your actual widget
-                      }).toList()
-                    : [Container()] // Wrap the single widget in a list
-              ],
-            )));
+        body: RefreshIndicator(
+          onRefresh: ()async{
+            getpostbyCompanyName();
+          },
+          child: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 60),
+              child: Column(
+                children: [
+                  CompanyDetails(isFollowing: widget.isFollowing, id: widget.id),
+                  ...companyPosts.isNotEmpty
+                      ? companyPosts.map((e) {
+                          print(e);
+                          return Posts(
+                              id: e['_id'],
+                              title: e['title'],
+                              description: e['content'],
+                              name: e['companyName'],
+                              numLikes: e['numLikes'],
+                              numDislikes: e['numDislikes'],
+                              numComments: e['numComments'],
+                              likes: e['likes'],
+                              dislikes: e['dislikes'],
+                              pdf: e['pdf'],
+                              logo: companyData['logo'],
+                              companyId: companyData['_id']);
+                          // Replace with your actual widget
+                        }).toList()
+                      : [Container()] // Wrap the single widget in a list
+                ],
+              )),
+        ));
   }
 }

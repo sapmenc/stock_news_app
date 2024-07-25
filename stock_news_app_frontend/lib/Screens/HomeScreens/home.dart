@@ -52,34 +52,39 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
-      body: SingleChildScrollView(
-          padding: EdgeInsets.only(left: 10, right: 10, bottom: 60),
-          child: Column(
-              mainAxisSize: MainAxisSize
-                  .min, // Adjusts the Column to the minimum space required
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: postData != null && postData.isNotEmpty
-                  ? postData.map((e) {
-                      // print(e);
-                      return Posts(
-                          id: e['_id'],
-                          logo: e['companyDetails']['logo'],
-                          title: e['title'],
-                          description: e['content'],
-                          name: e['companyName'],
-                          numLikes: e['numLikes'],
-                          numDislikes: e['numDislikes'],
-                          numComments: e['numComments'],
-                          likes: e['likes'],
-                          dislikes: e['dislikes'],
-                          pdf: e['pdf'],
-                          companyId: e['companyDetails']['_id']);
-                    }).toList()
-                  : [
-                      Container()
-                    ] // Provide an empty list or a default widget when `postData` is null or empty
-              )),
+      body: RefreshIndicator(
+        onRefresh: ()async{
+          fetchPosts();
+        },
+        child: SingleChildScrollView(
+            padding: EdgeInsets.only(left: 10, right: 10, bottom: 60),
+            child: Column(
+                mainAxisSize: MainAxisSize
+                    .min, // Adjusts the Column to the minimum space required
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: postData != null && postData.isNotEmpty
+                    ? postData.map((e) {
+                        // print(e);
+                        return Posts(
+                            id: e['_id'],
+                            logo: e['companyDetails']['logo'],
+                            title: e['title'],
+                            description: e['content'],
+                            name: e['companyName'],
+                            numLikes: e['numLikes'],
+                            numDislikes: e['numDislikes'],
+                            numComments: e['numComments'],
+                            likes: e['likes'],
+                            dislikes: e['dislikes'],
+                            pdf: e['pdf'],
+                            companyId: e['companyDetails']['_id']);
+                      }).toList()
+                    : [
+                        Container()
+                      ] // Provide an empty list or a default widget when `postData` is null or empty
+                )),
+      ),
     );
   }
 }

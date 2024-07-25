@@ -76,68 +76,74 @@ class _ExploreState extends State<Explore> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
-      body: Container(
-        padding: EdgeInsets.all(15),
-        child: Column(children: [
-          const TextField(
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-              fillColor: Color.fromARGB(102, 255, 255, 255),
-              filled: true,
-              contentPadding: EdgeInsets.all(10),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.blue, // Change border color here
+      body: RefreshIndicator(
+        onRefresh: ()async{
+          fetchCompanies();
+          fetchUser();
+        },
+        child: Container(
+          padding: EdgeInsets.all(15),
+          child: Column(children: [
+            const TextField(
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
+                fillColor: Color.fromARGB(102, 255, 255, 255),
+                filled: true,
+                contentPadding: EdgeInsets.all(10),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blue, // Change border color here
+                  ),
                 ),
+                hintText: "Search company",
+                suffixIcon: Icon(Icons.search),
+                hintStyle: TextStyle(
+                  color: Color.fromARGB(
+                      255, 255, 255, 255), // Change hint text color here
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(
+                          0xFF515151), // Change border color for enabled state
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(
+                          0xFF515151), // Change border color for focused state
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
               ),
-              hintText: "Search company",
-              suffixIcon: Icon(Icons.search),
-              hintStyle: TextStyle(
-                color: Color.fromARGB(
-                    255, 255, 255, 255), // Change hint text color here
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: 60),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: companies.map((e) {
+                      // print(e);
+                      var isFollowing = true;
+                      var matchingCompany = userData!
+                          .where((following) => following['_id'] == e['_id'])
+                          .toList();
+                      if (matchingCompany.isEmpty) {
+                        print("it is not in the following list");
+                        isFollowing = false;
+                      }
+                      return Companies(
+                          id: e['_id'],
+                          name: e['name'],
+                          profile: e['logo'],
+                          numArticles: e['postCount'],
+                          isFollowing: isFollowing);
+                    }).toList()),
               ),
-              enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(
-                        0xFF515151), // Change border color for enabled state
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(
-                        0xFF515151), // Change border color for focused state
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: 60),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: companies.map((e) {
-                    // print(e);
-                    var isFollowing = true;
-                    var matchingCompany = userData!
-                        .where((following) => following['_id'] == e['_id'])
-                        .toList();
-                    if (matchingCompany.isEmpty) {
-                      print("it is not in the following list");
-                      isFollowing = false;
-                    }
-                    return Companies(
-                        id: e['_id'],
-                        name: e['name'],
-                        profile: e['logo'],
-                        numArticles: e['postCount'],
-                        isFollowing: isFollowing);
-                  }).toList()),
-            ),
-          )
-        ]),
+            )
+          ]),
+        ),
       ),
     );
   }

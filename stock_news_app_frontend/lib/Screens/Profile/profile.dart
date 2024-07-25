@@ -49,6 +49,7 @@ class _ProfileState extends State<Profile> {
     fetchUser();
     super.initState();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -62,181 +63,186 @@ class _ProfileState extends State<Profile> {
         ),
         body: Container(
             margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Column(
-              children: [
-                Expanded(
-                    child: SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          "Profile",
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextFormField(
-                          controller: _controller,
-                          cursorColor: Colors.white,
-                          decoration: const InputDecoration(
-                            fillColor: Color.fromARGB(71, 255, 255, 255),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            labelText: "Username",
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(0, 81, 81,
-                                    81), // Change border color for enabled state
+            child: RefreshIndicator(
+              onRefresh: () async{
+                fetchUser();
+              },
+              child: Column(
+                children: [
+                  Expanded(
+                      child: SingleChildScrollView(
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            "Profile",
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextFormField(
+                            controller: _controller,
+                            cursorColor: Colors.white,
+                            decoration: const InputDecoration(
+                              fillColor: Color.fromARGB(71, 255, 255, 255),
+                              filled: true,
+                              contentPadding: EdgeInsets.all(10),
+                              labelText: "Username",
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 81, 81,
+                                      81), // Change border color for enabled state
+                                ),
                               ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(0, 81, 81,
-                                    81), // Change border color for focused state
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 81, 81,
+                                      81), // Change border color for focused state
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Save",
-                                style: TextStyle(color: Colors.white),
+                          Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "Save",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10))),
+                              )),
+                          TextFormField(
+                            controller: _Emailcontroller,
+                            readOnly: true,
+                            cursorColor: Colors.white,
+                            decoration: const InputDecoration(
+                              fillColor: Color.fromARGB(71, 255, 255, 255),
+                              filled: true,
+                              contentPadding: EdgeInsets.all(10),
+                              labelText: "Email",
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 81, 81,
+                                      81), // Change border color for enabled state
+                                ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10))),
-                            )),
-                        TextFormField(
-                          controller: _Emailcontroller,
-                          readOnly: true,
-                          cursorColor: Colors.white,
-                          decoration: const InputDecoration(
-                            fillColor: Color.fromARGB(71, 255, 255, 255),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            labelText: "Email",
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(0, 81, 81,
-                                    81), // Change border color for enabled state
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(0, 81, 81,
-                                    81), // Change border color for focused state
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextFormField(
-                          controller: _Passwordcontroller,
-                          cursorColor: Colors.white,
-                          decoration: const InputDecoration(
-                            fillColor: Color.fromARGB(71, 255, 255, 255),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            labelText: "Password",
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(0, 81, 81,
-                                    81), // Change border color for enabled state
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(0, 81, 81,
-                                    81), // Change border color for focused state
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 81, 81,
+                                      81), // Change border color for focused state
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Divider(),
-                        Text("Companies you follow"),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Wrap(
-                          spacing: 20,
-                          runSpacing: 20,
-                          children: companies.isNotEmpty
-                              ? companies.map((e) {
-                                  return GestureDetector(
-                                    onTap: (){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>CompanyProfile(id: e['_id'], isFollowing: true, name: '',)));
-                                    },
-                                    child: Column(
-                                      
-                                      children: [
-                                        CircleAvatar(
-                                          
-                                          backgroundColor:
-                                              Color.fromARGB(255, 42, 41, 41),
-                                          foregroundImage:
-                                              NetworkImage(e['logo']),
-                                          radius: 40,
-                                          child: Text(e['name'][0]),
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(top: 10),
-                                            constraints:
-                                                BoxConstraints(maxWidth: 120),
-                                            child: Text(
-                                              e['name'],
-                                              textAlign: TextAlign.center,
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                            ))
-                                      ],
-                                    ),
-                                  );
-                                }).toList()
-                              : [Container()],
-                        )
-                      ],
-                    ),
-                  ),
-                )),
-                Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        await GoogleSignIn().signOut();
-                        SharedPreferences sharedPreferences =
-                            await SharedPreferences.getInstance();
-                        await sharedPreferences.clear();
-                        Navigator.of(context, rootNavigator: true)
-                            .pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return const Screen2();
-                            },
+                          SizedBox(
+                            height: 10,
                           ),
-                          (_) => false,
-                        );
-                      },
-                      child: Text(
-                        "Logout",
-                        style: TextStyle(color: Colors.white),
+                          TextFormField(
+                            controller: _Passwordcontroller,
+                            cursorColor: Colors.white,
+                            decoration: const InputDecoration(
+                              fillColor: Color.fromARGB(71, 255, 255, 255),
+                              filled: true,
+                              contentPadding: EdgeInsets.all(10),
+                              labelText: "Password",
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 81, 81,
+                                      81), // Change border color for enabled state
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 81, 81,
+                                      81), // Change border color for focused state
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Divider(),
+                          Text("Companies you follow"),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Wrap(
+                            spacing: 20,
+                            runSpacing: 20,
+                            children: companies.isNotEmpty
+                                ? companies.map((e) {
+                                    return GestureDetector(
+                                      onTap: (){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CompanyProfile(id: e['_id'], isFollowing: true, name: '',)));
+                                      },
+                                      child: Column(
+                                        
+                                        children: [
+                                          CircleAvatar(
+                                            
+                                            backgroundColor:
+                                                Color.fromARGB(255, 42, 41, 41),
+                                            foregroundImage:
+                                                NetworkImage(e['logo']),
+                                            radius: 40,
+                                            child: Text(e['name'][0]),
+                                          ),
+                                          Container(
+                                              margin: EdgeInsets.only(top: 10),
+                                              constraints:
+                                                  BoxConstraints(maxWidth: 120),
+                                              child: Text(
+                                                e['name'],
+                                                textAlign: TextAlign.center,
+                                                softWrap: true,
+                                                overflow: TextOverflow.visible,
+                                              ))
+                                        ],
+                                      ),
+                                    );
+                                  }).toList()
+                                : [Container()],
+                          )
+                        ],
                       ),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                    ))
-              ],
+                    ),
+                  )),
+                  Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          await GoogleSignIn().signOut();
+                          SharedPreferences sharedPreferences =
+                              await SharedPreferences.getInstance();
+                          await sharedPreferences.clear();
+                          Navigator.of(context, rootNavigator: true)
+                              .pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return const Screen2();
+                              },
+                            ),
+                            (_) => false,
+                          );
+                        },
+                        child: Text(
+                          "Logout",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ))
+                ],
+              ),
             )),
       ),
     );
