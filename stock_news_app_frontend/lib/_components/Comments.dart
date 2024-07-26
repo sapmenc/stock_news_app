@@ -147,6 +147,7 @@ class _CommentsState extends State<Comments> {
                         child: Comment(
                       name: e['userId']['name'],
                       comment: e['comment'],
+                      date: e['date'],
                     )); // Replace with your actual widget
                   }).toList()
                 : [
