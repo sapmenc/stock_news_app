@@ -98,9 +98,9 @@ class _MyAppState extends State<MyApp> {
               ),
             )
           : isLoggedin! && isNew
-              ? InterestedCompanies()
+              ? MainScreen(tabIndex: 0)
               : isLoggedin!
-                  ? MainScreen()
+                  ? MainScreen(tabIndex: 1,)
                   : Screen1(),
     );
   }

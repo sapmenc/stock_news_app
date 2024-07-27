@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/_components/company_details.dart';
 import 'package:stock_news_app_frontend/_components/posts.dart';
 import 'package:stock_news_app_frontend/utils.dart';
@@ -21,24 +22,29 @@ class CompanyProfile extends StatefulWidget {
 }
 
 class _CompanyProfileState extends State<CompanyProfile> {
+  ScrollController _scrollController = ScrollController();
+  bool end = false;
+  int page = 1;
   var companyPosts = [];
   var companyData = {};
   final base_url = '${baseUrl}';
   final client = http.Client();
   void getpostbyCompanyName() async {
-    print("ppppppppppppppppppppppppppppppppppppppppppp");
     print('Widget Id: ${widget.id}');
     Uri companyposturi =
-        Uri.parse(baseUrl + 'post/companyName?page=1&limit=25');
+        Uri.parse(baseUrl + 'post/companyName?page=${page}&limit=25');
     final req = jsonEncode({"companyName": widget.name});
     final response = await client.post(companyposturi,
         body: req, headers: {'Content-Type': 'Application/json'});
-    // print(response.body);
     final res = jsonDecode(response.body);
-    // print('11111111111111111111111111111111111111111');
-    // print(res['data']['company'][0]);
+    if (res['data']['posts'].length ==0){
+      setState(() {
+        end = true;
+      });
+      return;
+    }
     setState(() {
-      companyPosts = res['data']['posts'];
+      companyPosts = [...companyPosts, ...res['data']['posts']];
       companyData = res['data']['company'][0];
     });
   }
@@ -47,6 +53,15 @@ class _CompanyProfileState extends State<CompanyProfile> {
   void initState() {
     // TODO: implement initState
     // fetchCompanyData();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+            setState(() {
+              page+=1;
+            });
+        getpostbyCompanyName();
+      }
+    });
     getpostbyCompanyName();
     super.initState();
   }
@@ -57,7 +72,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
         appBar: AppBar(
           title: Image.asset(
             'assets/Alpha-logo.png',
-            scale: 7,
+            scale: 20,
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -68,9 +83,14 @@ class _CompanyProfileState extends State<CompanyProfile> {
         ),
         body: RefreshIndicator(
           onRefresh: ()async{
+            setState(() {
+              page = 1;
+              companyPosts = [];
+            });
             getpostbyCompanyName();
           },
           child: SingleChildScrollView(
+            controller: _scrollController,
               padding: EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 60),
               child: Column(
                 children: [
@@ -92,9 +112,11 @@ class _CompanyProfileState extends State<CompanyProfile> {
                               logo: companyData['logo'],
                               companyId: companyData['_id'],
                             createdAt: e['date']);
-                          // Replace with your actual widget
                         }).toList()
-                      : [Container()] // Wrap the single widget in a list
+
+                      : [Container()],
+                      !end?CircularProgressIndicator():Container()
+
                 ],
               )),
         ));

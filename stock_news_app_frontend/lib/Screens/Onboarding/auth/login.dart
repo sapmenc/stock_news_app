@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
+import 'package:stock_news_app_frontend/Screens/Onboarding/auth/forgot-password.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/auth/google-sign-in.dart';
 import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 import 'package:http/http.dart' as http;
@@ -90,11 +91,11 @@ class _LoginFormState extends State<LoginForm> {
     // print(res);
     sharedPreferences.setString("userId", res['data']['_id']);
     if (res['data']['following'].length == 0){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen(tabIndex: 0,)));
     }
         else{
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen(tabIndex: 1,)));
         }
       } catch (e) {
         // print(e);
@@ -178,6 +179,10 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 obscureText: !_passwordVisible,
                 validator: _validatePassword,
+              ),
+              Align(
+alignment: Alignment.centerRight,
+child: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPassword()));}, child: Text("Forgot password?", style: TextStyle(color: Colors.blue),)),
               ),
               SizedBox(height: 20),
               ElevatedButton(

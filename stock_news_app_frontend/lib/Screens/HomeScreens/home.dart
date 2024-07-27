@@ -2,6 +2,11 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categories/All.dart';
+import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categories/BusinessUpdates.dart';
+import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categories/FInancialUpdates.dart';
+import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categories/General.dart';
+import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categories/Other.dart';
 import 'package:stock_news_app_frontend/_components/posts.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/utils.dart';
@@ -14,77 +19,220 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final client = http.Client();
+    ScrollController _scrollController = ScrollController();
+    var page = 1;
   List postData = [];
+    final client = http.Client();
+  final base_url = '${baseUrl}';
+  bool userFollowing = true;
+
+  Uri userUri = Uri.parse(baseUrl + 'user/email');
+  final userEmail = FirebaseAuth.instance.currentUser!.email;
+  void fetchUser() async {
+    final req = jsonEncode({"email": userEmail});
+    final response = await client.post(userUri,
+        body: req, headers: {'Content-Type': 'Application/json'});
+    print(response.body);
+    final res = jsonDecode(response.body);
+    setState(() {
+      if (res['data']['following'].length == 0){
+        userFollowing = false;
+      }
+      else{
+        userFollowing = true;
+      }
+    });
+  }
+
 
   void fetchPosts() async {
-    // print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    Uri fetchposts = Uri.parse(baseUrl + 'post/company?page=1&limit=25');
-    // print(FirebaseAuth.instance.currentUser!.email);
+    Uri fetchposts = Uri.parse(baseUrl + 'post/company?page=${page}&limit=25');
     final req = jsonEncode(
         {"userEmail": FirebaseAuth.instance.currentUser!.email as String});
     final response = await client.post(fetchposts,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
     print(response.body);
     final res = jsonDecode(response.body);
+
     setState(() {
-      postData = res['data'];
+      postData = [...postData, ...res['data']];
     });
+
   }
+
+
 
   @override
   void initState() {
     // TODO: implement initState
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+            setState(() {
+              page+=1;
+            });
+        fetchPosts();
+      }
+    });
     fetchPosts();
+    fetchUser();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          'assets/Alpha-logo.png',
-          scale: 7,
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: const TabBar(
+            tabAlignment: TabAlignment.start,
+            isScrollable: true,
+            tabs: [
+            Text("All", style: TextStyle(fontSize: 18),),
+            Text("Financial updates", style: TextStyle(fontSize: 18),),
+            Text("Business updates", style: TextStyle(fontSize: 18),),
+            Text("General", style: TextStyle(fontSize: 18),),
+            Text("Other", style: TextStyle(fontSize: 18),)
+          ]),
+          title: Image.asset(
+            'assets/Alpha-logo.png',
+            scale: 20,
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-      ),
-      body: RefreshIndicator(
+        body: userFollowing? const TabBarView(children: 
+        
+        [
+          All(),
+          Financialupdates(),
+          BusinessUpdates(),
+          General(),
+          Other()
+        ],):  TabBarView(children: 
+        
+        [
+          RefreshIndicator(
         onRefresh: ()async{
+          fetchUser();
           fetchPosts();
+
         },
-        child: SingleChildScrollView(
-            padding: EdgeInsets.only(left: 10, right: 10, bottom: 60),
-            child: Column(
-                mainAxisSize: MainAxisSize
-                    .min, // Adjusts the Column to the minimum space required
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: postData != null && postData.isNotEmpty
-                    ? postData.map((e) {
-                        // print(e);
-                        return Posts(
-                            id: e['_id'],
-                            logo: e['companyDetails']['logo'],
-                            title: e['title'],
-                            description: e['content'],
-                            name: e['companyName'],
-                            numLikes: e['numLikes'],
-                            numDislikes: e['numDislikes'],
-                            numComments: e['numComments'],
-                            likes: e['likes'],
-                            dislikes: e['dislikes'],
-                            pdf: e['pdf'],
-                            companyId: e['companyDetails']['_id'],
-                          createdAt: e['date']);
-                      }).toList()
-                    : [
-                        Container()
-                      ] // Provide an empty list or a default widget when `postData` is null or empty
-                )),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                height: MediaQuery.of(context).size.height *0.8, // Full screen height
+                child: Center(
+                  child: Text(
+                    "Follow more companies to see related news here.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+          RefreshIndicator(
+        onRefresh: ()async{
+          fetchUser();
+          fetchPosts();
+
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                height: MediaQuery.of(context).size.height *0.8, // Full screen height
+                child: Center(
+                  child: Text(
+                    "Follow more companies to see related news here.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+          RefreshIndicator(
+        onRefresh: ()async{
+          fetchUser();
+          fetchPosts();
+
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                height: MediaQuery.of(context).size.height *0.8, // Full screen height
+                child: Center(
+                  child: Text(
+                    "Follow more companies to see related news here.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+          RefreshIndicator(
+        onRefresh: ()async{
+          fetchUser();
+          fetchPosts();
+
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                height: MediaQuery.of(context).size.height *0.8, // Full screen height
+                child: Center(
+                  child: Text(
+                    "Follow more companies to see related news here.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+          RefreshIndicator(
+        onRefresh: ()async{
+          fetchUser();
+          fetchPosts();
+
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                height: MediaQuery.of(context).size.height *0.8, // Full screen height
+                child: Center(
+                  child: Text(
+                    "Follow more companies to see related news here.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+         
+
+        ],)
+        
       ),
     );
   }

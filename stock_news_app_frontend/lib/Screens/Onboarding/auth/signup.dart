@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
+// import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/auth/google-sign-in.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 
@@ -74,7 +75,7 @@ class _SignUpFormState extends State<SignUpForm> {
     }
     else{
       Navigator.pop(context);
-      Fluttertoast.showToast(msg: "Error signing in");
+      Fluttertoast.showToast(msg: "Error signing in. try again later");
     }
 }
 
@@ -84,13 +85,11 @@ class _SignUpFormState extends State<SignUpForm> {
     _passwordController.dispose();
     _fullNameController.dispose();
     _confirmPasswordController.dispose();
-    // timer.cancel();
-    // deleteAccountTimer.cancel();
+
     super.dispose();
   }
 
   void createUserinDb() async {
-    print("ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
     Uri createUser = Uri.parse('${baseUrl}' + 'user');
     final req = jsonEncode(
         {'name': _fullNameController.text, 'email': _emailController.text});
@@ -110,7 +109,7 @@ class _SignUpFormState extends State<SignUpForm> {
           await SharedPreferences.getInstance();
       sharedPreferences.setString('userId', res['data']['_id']);
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => InterestedCompanies()));
+          MaterialPageRoute(builder: (context) => MainScreen(tabIndex: 0,)));
     } else {
       deleteUser();
       // Fluttertoast.showToast(msg: "Error signing up");
@@ -163,7 +162,6 @@ class _SignUpFormState extends State<SignUpForm> {
             .createUserWithEmailAndPassword(
                 email: _emailController.text,
                 password: _passwordController.text);
-        print("111111111111111111111111111111111111111111111111111111");
         handleVerify();
         // createUserinDb();
         // await userCredentials.user!.sendEmailVerification();
@@ -185,7 +183,7 @@ class _SignUpFormState extends State<SignUpForm> {
             fontSize: 14.0);
       } catch (e) {
         Fluttertoast.showToast(
-            msg: "some error occured",
+            msg: "some error occured. try again later",
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.SNACKBAR,
             backgroundColor: Colors.black54,

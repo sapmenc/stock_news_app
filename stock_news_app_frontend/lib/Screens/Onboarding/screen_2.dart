@@ -51,8 +51,8 @@ class _Screen2State extends State<Screen2> {
                         : value == 'sign-up'
                             ? SignUpForm(
                                 updateAuthState: _updateStateVariable,
-                              )
-                            : OtpVerification(),
+                              ):Container()
+                            // : OtpVerification(),
                   ),
                 ),
               ),

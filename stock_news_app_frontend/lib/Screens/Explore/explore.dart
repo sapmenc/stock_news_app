@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
+import 'package:flutter/widgets.dart';
 import 'package:stock_news_app_frontend/Screens/Explore/_components/companies.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/utils.dart';
@@ -16,24 +15,29 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
+  bool end = false;
+  int page = 1;
+  TextEditingController _commentController = TextEditingController();
+  ScrollController _scrollController = ScrollController();
   List? userData = null;
   var companies = [];
-  // final baseUrl = "https://stock-market-news-backend.vercel.app/api";
   final base_url = '${baseUrl}';
   final client = http.Client();
-  // Uri userUrl = Uri.parse(baseUrl+'/user/email');
 
   void fetchCompanies() async {
-    Uri companiesUrl = Uri.parse(baseUrl + 'company/page?page=1&limit=25');
+    Uri companiesUrl = Uri.parse(baseUrl + 'company/page?page=${page}&limit=25');
     final response = await client.get(companiesUrl);
-    // print("333333333333333333333333333333333333333333333333333333");
-    print(response.body);
     final res = jsonDecode(response.body);
     final data = res['data'];
     final companiesList = data['companies'];
-    // print(companiesList);
+    if (companiesList.length == 0){
+      setState(() {
+        end = true;
+      });
+      return;
+    }
     setState(() {
-      companies = companiesList;
+      companies = [...companies, ...companiesList];
     });
   }
 
@@ -50,7 +54,6 @@ class _ExploreState extends State<Explore> {
     );
     final res = jsonDecode(response.body);
 
-    // print(res['data']['following']);
     setState(() {
       userData = res['data']['following'];
     });
@@ -58,10 +61,40 @@ class _ExploreState extends State<Explore> {
 
   @override
   void initState() {
-    // TODO: implement initState
+
+        _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent && !end) {
+            setState(() {
+              page+=1;
+            });
+        fetchCompanies();
+      }
+    });
     fetchCompanies();
     fetchUser();
+
+    _commentController.addListener(
+      filterCompanies
+    );
     super.initState();
+  }
+
+  void filterCompanies()async{
+    Uri filterCompanies = Uri.parse(base_url+'company/search');
+    final req = jsonEncode({
+      "query": _commentController.text
+    });
+    final res = await client.post(filterCompanies, body: req, headers: {
+      "Content-Type": "Application/json"
+    });
+    final respose = jsonDecode(res.body);
+    print("111111111111111111111111111111111111111111111111111111111");
+    print(respose);
+    setState(() {
+      companies = respose['data'];
+    });
+
   }
 
   @override
@@ -70,7 +103,7 @@ class _ExploreState extends State<Explore> {
       appBar: AppBar(
         title: Image.asset(
           'assets/Alpha-logo.png',
-          scale: 7,
+          scale: 20,
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -78,15 +111,22 @@ class _ExploreState extends State<Explore> {
       ),
       body: RefreshIndicator(
         onRefresh: ()async{
+          setState(() {
+            page = 1;
+            userData = [];
+            companies = [];
+          });
           fetchCompanies();
           fetchUser();
         },
         child: Container(
           padding: EdgeInsets.all(15),
           child: Column(children: [
-            const TextField(
+             TextField(
+              controller: _commentController,
+              
               cursorColor: Colors.white,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 fillColor: Color.fromARGB(102, 255, 255, 255),
                 filled: true,
                 contentPadding: EdgeInsets.all(10),
@@ -120,10 +160,11 @@ class _ExploreState extends State<Explore> {
             ),
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 padding: EdgeInsets.only(bottom: 60),
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: companies.map((e) {
+                    children: [...companies.map((e) {
                       // print(e);
                       var isFollowing = true;
                       var matchingCompany = userData!
@@ -139,7 +180,10 @@ class _ExploreState extends State<Explore> {
                           profile: e['logo'],
                           numArticles: e['postCount'],
                           isFollowing: isFollowing);
-                    }).toList()),
+                    }).toList(),
+                    !end?CircularProgressIndicator():Container()
+                    
+                    ]),
               ),
             )
           ]),

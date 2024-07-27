@@ -56,7 +56,12 @@ class _CommentsState extends State<Comments> {
 // print(response.body);
     final res = jsonDecode(response.body);
     _commentController.clear();
+    setState(() {
+      postData = {};
+      commentData = [];
+    });
     fetchComments();
+    
   }
 
   @override
@@ -70,92 +75,104 @@ class _CommentsState extends State<Comments> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          postData.isNotEmpty
-              ? Posts(
-                  id: postData['_id'],
-                  logo: postData['companyData'][0]['logo'],
-                  title: postData['title'],
-                  description: postData['companyData'][0]['description'],
-                  name: postData['companyName'],
-                  numLikes: postData['numLikes'],
-                  numDislikes: postData['numDislikes'],
-                  numComments: postData['numComments'],
-                  likes: postData['likes'],
-                  dislikes: postData['dislikes'],
-                  pdf: postData['pdf'],
-                  companyId: postData['companyData'][0]['_id'],
-                  createdAt: postData['date'],
-                )
-              : Container(),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _commentController,
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(10),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.blue, // Change border color here
+    return 
+    postData.isNotEmpty? RefreshIndicator(
+      onRefresh: ()async{
+        setState(() {
+          commentData = [];
+          postData = {};
+          fetchComments();
+        });
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            postData.isNotEmpty
+                ? Posts(
+                    id: postData['_id'],
+                    logo: postData['companyData'][0]['logo'],
+                    title: postData['title'],
+                    description: postData['companyData'][0]['description'],
+                    name: postData['companyName'],
+                    numLikes: postData['numLikes'],
+                    numDislikes: postData['numDislikes'],
+                    numComments: postData['numComments'],
+                    likes: postData['likes'],
+                    dislikes: postData['dislikes'],
+                    pdf: postData['pdf'],
+                    companyId: postData['companyData'][0]['_id'],
+                    createdAt: postData['date'],
+                  )
+                : Container(),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentController,
+                    cursorColor: Colors.white,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blue, // Change border color here
+                        ),
                       ),
-                    ),
-                    hintText: "Add a comment",
-                    hintStyle: TextStyle(
-                      color: Color(0xFF515151), // Change hint text color here
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color(
-                            0xFF515151), // Change border color for enabled state
+                      hintText: "Add a comment",
+                      hintStyle: TextStyle(
+                        color: Color(0xFF515151), // Change hint text color here
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color(
-                            0xFF515151), // Change border color for focused state
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(
+                              0xFF515151), // Change border color for enabled state
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(
+                              0xFF515151), // Change border color for focused state
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                  margin: EdgeInsets.only(left: 5),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: const Color.fromARGB(150, 158, 158, 158)),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: IconButton(
-                      onPressed: () {
-                        createComment();
-                      },
-                      icon: SvgPicture.asset('assets/CommentButton.svg')))
-            ],
-          ),
-          SizedBox(height: 10), // Add some space between the input and comments
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            children: commentData!.isNotEmpty
-                ? commentData!.map((e) {
-                    // print("1111111111111111111111111");
-                    // print(e['comment']);
-                    return Container(
-                        // height: double.infinity,
-                        child: Comment(
-                      name: e['userId']['name'],
-                      comment: e['comment'],
-                      date: e['date'],
-                    )); // Replace with your actual widget
-                  }).toList()
-                : [
-                    Text("No comments yet!")
-                  ], // Wrap the single widget in a list
-          )
-        ],
+                Container(
+                    margin: EdgeInsets.only(left: 5),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: const Color.fromARGB(150, 158, 158, 158)),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: IconButton(
+                        onPressed: () {
+                          createComment();
+                        },
+                        icon: SvgPicture.asset('assets/CommentButton.svg')))
+              ],
+            ),
+            SizedBox(height: 10), // Add some space between the input and comments
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: commentData!.isNotEmpty
+                  ? commentData!.map((e) {
+                      // print("1111111111111111111111111");
+                      // print(e['comment']);
+                      return Container(
+                          // height: double.infinity,
+                          child: Comment(
+                        name: e['userId']['name'],
+                        comment: e['comment'],
+                        date: e['date'],
+                      )); // Replace with your actual widget
+                    }).toList()
+                  : [
+                      Text("No comments yet!")
+                    ], // Wrap the single widget in a list
+            )
+          ],
+        ),
       ),
-    );
+    ):Container(
+      height: double.infinity,
+      child: Center(child: CircularProgressIndicator()));
   }
 }

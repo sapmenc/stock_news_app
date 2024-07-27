@@ -74,7 +74,7 @@ class Screen1 extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Login',
+                          'Next',
                           style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                         SizedBox(width: 5,),

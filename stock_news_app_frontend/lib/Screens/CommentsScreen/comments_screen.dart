@@ -21,7 +21,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         appBar: AppBar(
           title: Image.asset(
             'assets/Alpha-logo.png',
-            scale: 7,
+            scale: 20,
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,

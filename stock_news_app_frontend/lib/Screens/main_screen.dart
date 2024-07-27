@@ -6,7 +6,8 @@ import 'package:stock_news_app_frontend/_components/nav_bar.dart';
 import 'package:stock_news_app_frontend/_components/nav_model.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final tabIndex;
+  const MainScreen({super.key, required this.tabIndex});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -23,6 +24,12 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
+      if (widget.tabIndex == 0){
+
+      selectedTab = widget.tabIndex;
+      }
+    });
     items=[
       NavModel(page: Explore(), navkey: exploreNavKey),
       NavModel(page: Home(), navkey: homeNavKey),

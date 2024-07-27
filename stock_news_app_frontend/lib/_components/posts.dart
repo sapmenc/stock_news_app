@@ -272,45 +272,60 @@ class _PostsState extends State<Posts> {
                     ),
                   );
                 },
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      backgroundImage: NetworkImage(widget.logo),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      constraints: BoxConstraints(maxWidth: 150),
-                      child: Text(
-                        widget.name,
-                        style: const TextStyle(
-                          color: Color(0xFF79ABFF),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        softWrap: true,
-                        overflow: TextOverflow.visible,
+                child: 
+                Container(
+                  constraints: BoxConstraints(maxWidth: screenWidth*0.5, minWidth: screenWidth*0.3),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(widget.logo),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                            widget.name,
+                            style: const TextStyle(
+                              color: Color(0xFF79ABFF),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                      ),
+                      
+                    ],
+                  ),
                 ),
               ),
-              Text(
-                '${widget.createdAt.substring(0, 10).split('-').reversed.join('-')} | ${widget.createdAt.substring(11, 19)}',
-                style: TextStyle(color: Color(0xFF7D7D7D), fontSize: 12),
+              Container(
+                constraints: BoxConstraints(maxWidth: screenWidth*0.4),
+                child: Text(
+                  '${widget.createdAt.substring(0, 10).split('-').reversed.join('-')} | ${widget.createdAt.substring(11, 19)}',
+                  style: TextStyle(color: Color(0xFF7D7D7D), fontSize: 12),
+                ),
               ),
             ],
           ),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 10),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xFF4285F4))),
-            ),
-            child: Text(
-              widget.title,
-              style: TextStyle(
-                color: Color(0xFF4285F4),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+          
+          GestureDetector(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>CommentsScreen(postId: widget.id)));
+            },
+            child: Container(
+              
+              margin: EdgeInsets.symmetric(vertical: 10),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFF4285F4))),
+              ),
+              child: Text(
+                widget.title,
+                style: TextStyle(
+                  color: Color(0xFF4285F4),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
