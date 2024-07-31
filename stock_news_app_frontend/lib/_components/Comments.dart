@@ -149,6 +149,7 @@ class _CommentsState extends State<Comments> {
                         icon: SvgPicture.asset('assets/CommentButton.svg')))
               ],
             ),
+          
             SizedBox(height: 10), // Add some space between the input and comments
             Column(
               mainAxisSize: MainAxisSize.max,

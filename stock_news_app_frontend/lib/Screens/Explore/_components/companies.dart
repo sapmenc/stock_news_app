@@ -32,15 +32,14 @@ class _CompaniesState extends State<Companies> {
   }
 
     void toggleFollow() async {
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-      final userId = sharedPreferences.getString('userId');
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final userId = sharedPreferences.getString('userId');
     final base_url = '$baseUrl';
     Uri follow = Uri.parse(base_url + "company/follow");
     Uri unfollow = Uri.parse(base_url + "company/unfollow");
     final req = jsonEncode(
         {"userId": userId, "companyId": widget.id});
-    // print("3333333333333333333333333333333333333333333333333333");
-    // print(widget.id);
+
     if (isFollowing) {
       setState(() {
         isFollowing = !isFollowing;
@@ -52,9 +51,7 @@ class _CompaniesState extends State<Companies> {
           'Content-Type': 'application/json', // Add this header
         },
       );
-      // print(response.body);
 
-      // print(response.body);
       final res = jsonDecode(response.body);
       if (res['status'] == false) {
         setState(() {

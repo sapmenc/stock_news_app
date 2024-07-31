@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,13 +43,35 @@ class _ProfileState extends State<Profile> {
   }
 
   void updateUser() async{
-
+    try {
+      
+    Uri userUpdateUrl = Uri.parse(baseUrl + 'user/update');
+    final req = jsonEncode({
+      "email": _Emailcontroller.text,
+      "name": _controller.text
+    });
+    final response = await client.post(userUpdateUrl, body: req, headers: {
+      "Content-Type": "Application/json"
+    });
+    final res = jsonDecode(response.body);
+    print("00000000000000000000000000000000000000000000000000000000");
+    print(res);
+    if (res['status']){
+      Fluttertoast.showToast(msg: "user name updated.");
+    }
+    else{
+      Fluttertoast.showToast(msg: "some error occured. try again later");
+    }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "some error occured. try again later");
+    }
   }
 
   TextEditingController _controller = TextEditingController();
   TextEditingController _Emailcontroller =
       TextEditingController(text: FirebaseAuth.instance.currentUser!.email);
   TextEditingController _Passwordcontroller = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -97,7 +120,7 @@ class _ProfileState extends State<Profile> {
                               fillColor: Color.fromARGB(71, 255, 255, 255),
                               filled: true,
                               contentPadding: EdgeInsets.all(10),
-                              labelText: "Username",
+                              labelText: "name",
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: Color.fromARGB(0, 81, 81,
@@ -116,7 +139,9 @@ class _ProfileState extends State<Profile> {
                               margin: EdgeInsets.symmetric(vertical: 10),
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  updateUser();
+                                },
                                 child: Text(
                                   "Save",
                                   style: TextStyle(color: Colors.white),
