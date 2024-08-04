@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:stock_news_app_frontend/Screens/Explore/_components/companies.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/Screens/main_screen.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 
 class Explore extends StatefulWidget {
@@ -23,7 +25,8 @@ class _ExploreState extends State<Explore> {
   var companies = [];
   final base_url = '${baseUrl}';
   final client = http.Client();
-
+    bool isFollowing = false;
+bool showButton = false;
   void fetchCompanies() async {
     Uri companiesUrl = Uri.parse(baseUrl + 'company/page?page=${page+1}&limit=25');
     final response = await client.get(companiesUrl);
@@ -48,7 +51,7 @@ class _ExploreState extends State<Explore> {
     });
   }
 
-  void fetchUser() async {
+  Future<bool> fetchUser() async {
     final email = FirebaseAuth.instance.currentUser!.email;
     Uri userUri = Uri.parse(base_url + 'user/email');
     final req = jsonEncode({"email": email});
@@ -60,10 +63,21 @@ class _ExploreState extends State<Explore> {
       },
     );
     final res = jsonDecode(response.body);
-
-    setState(() {
+    if (res['data']['following'].length>0){
+        setState(() {
       userData = res['data']['following'];
+      isFollowing = true;
     });
+    return true;
+    }
+    else{
+      setState(() {
+        isFollowing = false;
+        showButton = true;
+      });
+      return false;
+    }
+
   }
 
   @override
@@ -87,7 +101,7 @@ print(page);
     print(_commentController.text);
     if (_commentController.text == ""){
       setState(() {
-        page = 1;
+        page = 0;
         companies = [];
       });
       fetchCompanies();
@@ -129,131 +143,128 @@ print(page);
       body: RefreshIndicator(
         onRefresh: ()async{
           setState(() {
-            page = 1;
+            page = 0;
             userData = [];
             companies = [];
           });
           fetchCompanies();
           fetchUser();
         },
-        child: Container(
-          padding: EdgeInsets.all(15),
-          child: Column(children: [
-            //  TextField(
-            //   controller: _commentController,
-              
-            //   cursorColor: Colors.white,
-            //   decoration: const InputDecoration(
-            //     fillColor: Color.fromARGB(102, 255, 255, 255),
-            //     filled: true,
-            //     contentPadding: EdgeInsets.all(10),
-            //     border: OutlineInputBorder(
-            //       borderSide: BorderSide(
-            //         color: Colors.blue, // Change border color here
-            //       ),
-            //     ),
-            //     hintText: "Search company",
-            //     suffixIcon: Icon(Icons.search),
-            //     hintStyle: TextStyle(
-            //       color: Color.fromARGB(
-            //           255, 255, 255, 255), // Change hint text color here
-            //     ),
-            //     enabledBorder: OutlineInputBorder(
-            //         borderSide: BorderSide(
-            //           color: Color(
-            //               0xFF515151), // Change border color for enabled state
-            //         ),
-            //         borderRadius: BorderRadius.all(Radius.circular(10))),
-            //     focusedBorder: OutlineInputBorder(
-            //         borderSide: BorderSide(
-            //           color: Color(
-            //               0xFF515151), // Change border color for focused state
-            //         ),
-            //         borderRadius: BorderRadius.all(Radius.circular(10))),
-            //   ),
-            // ),
-           
-                        Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _commentController,
-                    cursorColor: Colors.white,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.blue, // Change border color here
-                        ),
-                      ),
-                      hintText: "Search Company",
-                      hintStyle: TextStyle(
-                        color: Color(0xFF515151), // Change hint text color here
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(
-                              0xFF515151), // Change border color for enabled state
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(
-                              0xFF515151), // Change border color for focused state
+        child: Stack(
+          
+          children: [
+            Container(
+              padding: EdgeInsets.all(15),
+              child: Column(children: [           
+                            Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _commentController,
+                        cursorColor: Colors.white,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.blue, // Change border color here
+                            ),
+                          ),
+                          hintText: "Search Company",
+                          hintStyle: TextStyle(
+                            color: Color(0xFF515151), // Change hint text color here
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(
+                                  0xFF515151), // Change border color for enabled state
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(
+                                  0xFF515151), // Change border color for focused state
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    Container(
+                        margin: EdgeInsets.only(left: 5),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: const Color.fromARGB(150, 158, 158, 158)),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: IconButton(
+                            onPressed: () {
+                              filterCompanies();
+                              // createComment();
+                            },
+                            icon: Icon(Icons.search)))
+                  ],
                 ),
-                Container(
-                    margin: EdgeInsets.only(left: 5),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: const Color.fromARGB(150, 158, 158, 158)),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: IconButton(
-                        onPressed: () {
-                          filterCompanies();
-                          // createComment();
-                        },
-                        icon: Icon(Icons.search)))
-              ],
+              
+            
+            
+                // SizedBox(
+                //   height: 20,
+                // ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: EdgeInsets.only(bottom: 60),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [...companies.map((e) {
+                          // print(e);
+                          var isFollowing = true;
+                          var matchingCompany = userData!
+                              .where((following) => following['_id'] == e['_id'])
+                              .toList();
+                          if (matchingCompany.isEmpty) {
+                            print("it is not in the following list");
+                            isFollowing = false;
+                          }
+                          return Companies(
+                              id: e['_id'],
+                              name: e['name'],
+                              profile: e['logo'],
+                              numArticles: e['postCount'],
+                              isFollowing: isFollowing);
+                        }).toList(),
+                        !end?CircularProgressIndicator():Container()
+                        
+                        ]),
+                  ),
+                )
+              ]),
             ),
-          
+            showButton? Container(
+              padding: EdgeInsets.only(bottom: 70),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ElevatedButton(onPressed: ()async{
 
-
-            // SizedBox(
-            //   height: 20,
-            // ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: EdgeInsets.only(bottom: 60),
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [...companies.map((e) {
-                      // print(e);
-                      var isFollowing = true;
-                      var matchingCompany = userData!
-                          .where((following) => following['_id'] == e['_id'])
-                          .toList();
-                      if (matchingCompany.isEmpty) {
-                        print("it is not in the following list");
-                        isFollowing = false;
-                      }
-                      return Companies(
-                          id: e['_id'],
-                          name: e['name'],
-                          profile: e['logo'],
-                          numArticles: e['postCount'],
-                          isFollowing: isFollowing);
-                    }).toList(),
-                    !end?CircularProgressIndicator():Container()
-                    
-                    ]),
-              ),
-            )
-          ]),
+                  bool status = await fetchUser();
+                  if (userData!.isEmpty || userData ==null ||status == false){
+                    Fluttertoast.showToast(msg: "Follow some companies to proceed");
+                  }
+                  else{
+                      setState(() {
+                        showButton = false;
+                      });
+                                      Navigator.of(context, rootNavigator: true)
+                              .pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return const MainScreen(tabIndex: 1,);
+                              },
+                            ),
+                            (_) => false,
+                          );
+                  }
+                }, child: Text("proceed"), style: ElevatedButton.styleFrom( backgroundColor: Colors.green,),)),
+            ):Container()
+          ],
         ),
       ),
     );

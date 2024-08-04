@@ -111,7 +111,9 @@ class _HomeState extends State<Home> {
           BusinessUpdates(),
           General(),
           Other()
-        ],):  TabBarView(children: 
+        ],):  
+        
+        TabBarView(children: 
         
         [
           RefreshIndicator(

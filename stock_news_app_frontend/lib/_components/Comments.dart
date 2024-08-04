@@ -92,7 +92,7 @@ class _CommentsState extends State<Comments> {
                     id: postData['_id'],
                     logo: postData['companyData'][0]['logo'],
                     title: postData['title'],
-                    description: postData['companyData'][0]['description'],
+                    description: postData['content'],
                     name: postData['companyName'],
                     numLikes: postData['numLikes'],
                     numDislikes: postData['numDislikes'],
