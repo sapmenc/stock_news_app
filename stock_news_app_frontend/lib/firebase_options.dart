@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDP0vMA6UuvNiskB-AN9NDa8bXvAs0bBks',
-    appId: '1:178797150389:android:bbee01d1a1a203fbf17efc',
+    appId: '1:178797150389:android:e846958f5e423393f17efc',
     messagingSenderId: '178797150389',
     projectId: 'alpha-stock-news-mobile-app',
     storageBucket: 'alpha-stock-news-mobile-app.appspot.com',
@@ -59,10 +59,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBv0CzH8BRs3uRpdacrIBf2qXleELcv39w',
-    appId: '1:178797150389:ios:7ebcd310984f48d3f17efc',
+    appId: '1:178797150389:ios:e0a91c8defaa77d6f17efc',
     messagingSenderId: '178797150389',
     projectId: 'alpha-stock-news-mobile-app',
     storageBucket: 'alpha-stock-news-mobile-app.appspot.com',
-    iosBundleId: 'com.example.stockNewsAppFrontend',
+    androidClientId: '178797150389-0rv09ogkraovehpqa0sj96jlejotqdqd.apps.googleusercontent.com',
+    iosClientId: '178797150389-ol3tblmoatq0c8dp77tk9rv2s93r56tj.apps.googleusercontent.com',
+    iosBundleId: 'com.alpha.stockNewsAppFrontend',
   );
+
 }
