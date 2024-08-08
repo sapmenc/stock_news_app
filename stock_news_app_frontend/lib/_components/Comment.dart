@@ -15,6 +15,8 @@ class Comment extends StatefulWidget {
 }
 
 class _CommentState extends State<Comment> {
+  late String dateIst;
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
@@ -45,7 +47,7 @@ class _CommentState extends State<Comment> {
               ),
             ),
             Text(
-                '${widget.date.substring(0, 10).split('-').reversed.join('-')} | ${widget.date.substring(11, 19)}',
+                '${dateIst.substring(0, 10).split('-').reversed.join('-')} | ${dateIst.substring(11, 19)}',
                 style: TextStyle(color: Color(0xFF7D7D7D), fontSize: 12))
           ]),
           SizedBox(
