@@ -18,6 +18,16 @@ class _CommentState extends State<Comment> {
   late String dateIst;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      
+    dateIst = DateTime.parse(widget.date).toLocal().toString();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
 
