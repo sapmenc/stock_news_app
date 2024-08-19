@@ -23,7 +23,7 @@ class _BusinessUpdatesState extends State<BusinessUpdates> {
   void fetchPosts() async {
     Uri fetchposts = Uri.parse(baseUrl + 'post/company?page=${page}&limit=25');
     final req = jsonEncode(
-        {"userEmail": FirebaseAuth.instance.currentUser!.email as String, "categoy": "Business Updates"});
+        {"userEmail": FirebaseAuth.instance.currentUser!.email as String, "category": "Business Updates"});
     final response = await client.post(fetchposts,
         body: req, headers: {'Content-Type': 'Application/json'});
     print(response.body);

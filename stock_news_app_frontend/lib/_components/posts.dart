@@ -1,12 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/CommentsScreen/comments_screen.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/company_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stock_news_app_frontend/_components/Comments.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/_components/PDFScreen.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -45,6 +51,7 @@ class Posts extends StatefulWidget {
 }
 
 class _PostsState extends State<Posts> {
+  String remotePDFpath = "";
   final client = http.Client();
   bool isExpanded = false;
   int numLikes = 0;
@@ -106,7 +113,39 @@ class _PostsState extends State<Posts> {
     // TODO: implement initState
     setVariables();
     super.initState();
+ createFileOfPdfUrl().then((f) {
+      setState(() {
+        remotePDFpath = f.path;
+      });
+    });
   }
+
+    Future<File> createFileOfPdfUrl() async {
+    Completer<File> completer = Completer();
+    print("Start download file from internet!");
+    try {
+      // "https://berlin2017.droidcon.cod.newthinking.net/sites/global.droidcon.cod.newthinking.net/files/media/documents/Flutter%20-%2060FPS%20UI%20of%20the%20future%20%20-%20DroidconDE%2017.pdf";
+      // final url = "https://pdfkit.org/docs/guide.pdf";
+      final url = widget.pdf;
+      final filename = url.substring(url.lastIndexOf("/") + 1);
+      var request = await HttpClient().getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+      var dir = await getApplicationDocumentsDirectory();
+      print("Download files");
+      print("${dir.path}/$filename");
+      File file = File("${dir.path}/$filename");
+
+      await file.writeAsBytes(bytes, flush: true);
+      completer.complete(file);
+    } catch (e) {
+      throw Exception('Error parsing asset file!');
+    }
+
+    return completer.future;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -191,16 +230,25 @@ class _PostsState extends State<Posts> {
     Future? handlePdf(String pdf) async {
       final Uri url = Uri.parse(pdf);
       if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
+        await launchUrl(url, mode: LaunchMode.inAppBrowserView);
       } else {
         throw 'Could not launch $url';
       }
+     
     }
 
-    void Function() createHandleClick(String pdf) {
-      return () async {
-        await handlePdf(pdf);
-      };
+    Future? createHandleClick() {
+      // return () async {
+      //   await handlePdf(pdf);
+      // };
+if (remotePDFpath.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PDFScreen(path: remotePDFpath),
+                        ),
+                      );
+                    }
     }
 
     var postActions = [
@@ -234,7 +282,7 @@ class _PostsState extends State<Posts> {
         'isActive': false,
         'activeColor': Color(0xFFFFFFFF),
         'num': null,
-        'handleClick': createHandleClick(pdf),
+        'handleClick': createHandleClick,
       },
     ];
 
