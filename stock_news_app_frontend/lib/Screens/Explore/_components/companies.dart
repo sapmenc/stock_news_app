@@ -19,11 +19,14 @@ class Companies extends StatefulWidget {
 
 class _CompaniesState extends State<Companies> {
 
-    bool isFollowing = false;
+    late bool isFollowing;
     final client = http.Client();
 
     @override
   void initState() {
+    print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+    print(widget.name);
+    print(widget.isFollowing);
     // TODO: implement initState
     setState(() {
       isFollowing = widget.isFollowing;

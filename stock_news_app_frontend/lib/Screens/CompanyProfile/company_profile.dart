@@ -30,7 +30,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
   final base_url = '${baseUrl}';
   final client = http.Client();
   void getpostbyCompanyName() async {
-    print('Widget Id: ${widget.id}');
+    // print('Widget Id: ${widget.id}');
     Uri companyposturi =
         Uri.parse(baseUrl + 'post/companyName?page=${page}&limit=25');
     final req = jsonEncode({"companyName": widget.name});
@@ -97,7 +97,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
                   CompanyDetails(isFollowing: widget.isFollowing, id: widget.id),
                   ...companyPosts.isNotEmpty
                       ? companyPosts.map((e) {
-                          print(e);
+                          // print(e);
                           return Posts(
                               id: e['_id'],
                               title: e['title'],

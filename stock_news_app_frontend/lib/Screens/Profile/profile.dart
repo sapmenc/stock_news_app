@@ -33,7 +33,7 @@ class _ProfileState extends State<Profile> {
     final req = jsonEncode({"email": userEmail});
     final response = await client.post(userUri,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print(response.body);
+    // print(response.body);
     final res = jsonDecode(response.body);
     setState(() {
       username = res['data']['name'];
@@ -54,8 +54,8 @@ class _ProfileState extends State<Profile> {
       "Content-Type": "Application/json"
     });
     final res = jsonDecode(response.body);
-    print("00000000000000000000000000000000000000000000000000000000");
-    print(res);
+    // print("00000000000000000000000000000000000000000000000000000000");
+    // print(res);
     if (res['status']){
       Fluttertoast.showToast(msg: "user name updated.");
     }

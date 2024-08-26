@@ -23,12 +23,12 @@ class _CompanyDetailsState extends State<CompanyDetails> {
 
   void fetchCompanyData() async {
     Uri companyUri = Uri.parse(baseUrl + 'company/id');
-    print(widget.id);
+    // print(widget.id);
     final req = jsonEncode({"companyId": widget.id as String});
     final response = await client.post(companyUri,
         body: req, headers: {'Content-Type': 'application/json'});
     final res = jsonDecode(response.body);
-    print("111111111111111111111111111111111111111111111111");
+    // print("111111111111111111111111111111111111111111111111");
     print(response.body);
     setState(() {
       companyData = res['data'];

@@ -35,7 +35,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
   void handleVerify() {
     user = FirebaseAuth.instance.currentUser!;
-    print("2222222222222222222222222222222222222222222222222");
+    // print("2222222222222222222222222222222222222222222222222");
     user.sendEmailVerification();
     setState(() {
       isVerify = true;
@@ -69,7 +69,7 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
   void signInWithGoogle() async {
-    print(FirebaseAuth.instance.currentUser);
+    // print(FirebaseAuth.instance.currentUser);
     if (await googleSignIn()){
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyApp()));
     }

@@ -19,9 +19,10 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   bool end = false;
   int page = 0;
+  bool isFetching = true;
   TextEditingController _commentController = TextEditingController();
   ScrollController _scrollController = ScrollController();
-  List? userData = [];
+  List? followingCompanies = [];
   var companies = [];
   final base_url = '${baseUrl}';
   final client = http.Client();
@@ -52,6 +53,9 @@ bool showButton = false;
   }
 
   Future<bool> fetchUser() async {
+    setState(() {
+      isFetching = true;
+    });
     final email = FirebaseAuth.instance.currentUser!.email;
     Uri userUri = Uri.parse(base_url + 'user/email');
     final req = jsonEncode({"email": email});
@@ -64,9 +68,12 @@ bool showButton = false;
     );
     final res = jsonDecode(response.body);
     if (res['data']['following'].length>0){
+      print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
+      print(res['data']['following']);
         setState(() {
-      userData = res['data']['following'];
+      followingCompanies = res['data']['following'];
       isFollowing = true;
+      isFetching = false;
     });
     return true;
     }
@@ -86,8 +93,8 @@ bool showButton = false;
         _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent && !end) {
-print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-print(page);
+// print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
+// print(page);
         fetchCompanies();
       }
     });
@@ -98,13 +105,17 @@ print(page);
   }
 
   void filterCompanies()async{
-    print(_commentController.text);
+    setState(() {
+      isFetching = true;
+    });
+    // print(_commentController.text);
     if (_commentController.text == ""){
       setState(() {
         page = 0;
         companies = [];
       });
       fetchCompanies();
+      fetchUser();
       return;
     }
     Uri filterCompanies = Uri.parse(base_url+'company/search');
@@ -115,15 +126,16 @@ print(page);
       "Content-Type": "Application/json"
     });
     final respose = jsonDecode(res.body);
-    print(respose);
+    // print(respose);
     setState(() {
       companies = respose['data'];
-      if (respose['data'].length<10){
+      if (respose['data'].length<25){
         end = true;
       }
       else{
         end = false;
       }
+      isFetching = false;
     });
 
   }
@@ -144,7 +156,7 @@ print(page);
         onRefresh: ()async{
           setState(() {
             page = 0;
-            userData = [];
+            followingCompanies = [];
             companies = [];
           });
           fetchCompanies();
@@ -212,28 +224,31 @@ print(page);
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     padding: EdgeInsets.only(bottom: 60),
-                    child: Column(
+                    child: !isFetching?
+                     Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [...companies.map((e) {
-                          // print(e);
-                          var isFollowing = true;
-                          var matchingCompany = userData!
-                              .where((following) => following['_id'] == e['_id'])
-                              .toList();
-                          if (matchingCompany.isEmpty) {
-                            print("it is not in the following list");
-                            isFollowing = false;
-                          }
+
+
+                          bool following = false;
+                          setState(() {
+                            following = followingCompanies!.any((c)=>c["_id"]==e["_id"]);
+                          });
+                       
                           return Companies(
                               id: e['_id'],
                               name: e['name'],
                               profile: e['logo'],
                               numArticles: e['postCount'],
-                              isFollowing: isFollowing);
+                              isFollowing: following);
                         }).toList(),
                         !end?CircularProgressIndicator():Container()
                         
-                        ]),
+                        ]):Container(height: MediaQuery.of(context).size.height*0.7,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        ),
                   ),
                 )
               ]),
@@ -245,7 +260,7 @@ print(page);
                 child: ElevatedButton(onPressed: ()async{
 
                   bool status = await fetchUser();
-                  if (userData!.isEmpty || userData ==null ||status == false){
+                  if (followingCompanies!.isEmpty || followingCompanies ==null ||status == false){
                     Fluttertoast.showToast(msg: "Follow some companies to proceed");
                   }
                   else{

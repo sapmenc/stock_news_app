@@ -7,24 +7,24 @@ import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
 Future<bool> googleSignIn() async {
-  print("1111111111111111111111111111111111111111111111111111111111111111111111");
+  // print("1111111111111111111111111111111111111111111111111111111111111111111111");
   final client = http.Client();
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  print("22222222222222222222222222222222222222222222222222222222222222222222222");
+  // print("22222222222222222222222222222222222222222222222222222222222222222222222");
   final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-  print("33333333333333333333333333333333333333333333333333333333333333333333333");
+  // print("33333333333333333333333333333333333333333333333333333333333333333333333");
   final credential = GoogleAuthProvider.credential(
     accessToken: googleAuth?.accessToken,
     idToken: googleAuth?.idToken,
   );
-  print("4444444444444444444444444444444444444444444444444444444444444444444444444");
+  // print("4444444444444444444444444444444444444444444444444444444444444444444444444");
 
 
   UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-  print("5555555555555555555555555555555555555555555555555555555555555555555555555555555");
-  print(userCredential.user!.displayName);
+  // print("5555555555555555555555555555555555555555555555555555555555555555555555555555555");
+  // print(userCredential.user!.displayName);
   if (userCredential.user!.displayName!=null && userCredential.user!.email!=null){
-    print("fetching user from db");
+    // print("fetching user from db");
     Uri createUser = Uri.parse('${baseUrl}' + 'user');
     Uri fetchUser = Uri.parse(baseUrl+'user/email');
     final user1req = jsonEncode(
@@ -44,12 +44,12 @@ Future<bool> googleSignIn() async {
       return true;
     }
     else{
-      print("creating user in db");
+      // print("creating user in db");
       final response2 = await client.post(createUser, body: user1req, headers: {
         'Content-Type': 'Application/json'
       });
       final resp = jsonDecode(response2.body);
-      print(resp);
+      // print(resp);
       if (resp['status']){
         await sharedPreferences.setString("email", resp['data']['email']);
         await sharedPreferences.setString("userId", resp['data']['_id']);
