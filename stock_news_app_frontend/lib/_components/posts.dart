@@ -13,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stock_news_app_frontend/_components/Comments.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/_components/PDFScreen.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -172,6 +173,7 @@ class _PostsState extends State<Posts> {
           body: req, headers: {'Content-Type': 'application/json'});
       final res = jsonDecode(response.body);
       // print(res);
+
       if (res['status'] == false) {
         setState(() {
           if (isLiked == false) {
@@ -182,6 +184,8 @@ class _PostsState extends State<Posts> {
             numLikes -= 1;
           }
         });
+      }else{
+        analytics.logEvent(name: "React_bull_${widget.id}");
       }
     }
 
@@ -215,6 +219,8 @@ class _PostsState extends State<Posts> {
             numDislikes -= 1;
           }
         });
+      }else{
+        analytics.logEvent(name: "React_bear_${widget.id}");
       }
     }
 
@@ -237,11 +243,14 @@ class _PostsState extends State<Posts> {
      
     }
 
-    Future? createHandleClick() {
+    Future? createHandleClick() async{
       // return () async {
       //   await handlePdf(pdf);
       // };
 if (remotePDFpath.isNotEmpty) {
+  await analytics.logEvent(name: "Article_pdf_${widget.id}", parameters: {
+    "timestamp": DateTime.now().toIso8601String()
+  });
                       Navigator.push(
                         context,
                         MaterialPageRoute(

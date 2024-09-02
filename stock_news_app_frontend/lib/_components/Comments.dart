@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/_components/Comment.dart';
 import 'package:stock_news_app_frontend/_components/posts.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +23,7 @@ class _CommentsState extends State<Comments> {
   List? commentData = [];
   var postData = {};
   void fetchComments() async {
+    DateTime start = DateTime.now();
     Uri fetchcomments =
         Uri.parse(baseUrl + 'post/comments/page?page=1&limit=25');
     final req = jsonEncode({"postId": widget.id});
@@ -38,6 +40,10 @@ class _CommentsState extends State<Comments> {
         postData = res['data'];
       });
     }
+            DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "comment_screen_load_time", parameters: {
+      "time": duration
+    });
   }
 
   void createComment() async {
@@ -56,6 +62,9 @@ class _CommentsState extends State<Comments> {
 // print(response.body);
     final res = jsonDecode(response.body);
     _commentController.clear();
+    await analytics.logEvent(name: "Comment_${widget.id}", parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    });
     setState(() {
       postData = {};
       commentData = [];
@@ -64,11 +73,18 @@ class _CommentsState extends State<Comments> {
     
   }
 
+  void logArticleView() async{
+await analytics.logEvent(name: "Article_view_${widget.id}", parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    });
+  }
+
   @override
-  void initState() {
+  void initState(){
     fetchComments();
     // TODO: implement initState
     super.initState();
+    logArticleView();
   }
 
   @override

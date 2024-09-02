@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_news_app_frontend/Screens/Interests/interested_companies.dart';
@@ -16,7 +17,7 @@ import '../../../utils.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginForm extends StatefulWidget {
-    final Function(String) updateAuthState;
+  final Function(String) updateAuthState;
   const LoginForm({super.key, required this.updateAuthState});
 
   @override
@@ -39,11 +40,11 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future signInWithGoogle() async {
-    if (await googleSignIn()){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyApp()));
+    if (await googleSignIn()) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => MyApp()));
     }
-}
-
+  }
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -67,41 +68,68 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _submitForm() async {
-    if (_formKey.currentState!.validate()) {  
+
+    if (_formKey.currentState!.validate()) {
+      DateTime start = DateTime.now();
       try {
-       
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text);
 
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-        
-         Uri fetchUserUrl = Uri.parse(baseUrl + 'user/email');
-        final req = jsonEncode({
-          "email": FirebaseAuth.instance.currentUser!.email as String
-        });
+        Uri fetchUserUrl = Uri.parse(baseUrl + 'user/email');
+        final req = jsonEncode(
+            {"email": FirebaseAuth.instance.currentUser!.email as String});
         final response = await client.post(
-      fetchUserUrl,
-      body: req,
-      headers: {
-        'Content-Type': 'application/json', // Add this header
-      },
-    );
-
-    // print(response.body);
-    final res = jsonDecode(response.body);
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    // print(res);
-    sharedPreferences.setString("userId", res['data']['_id']);
-    if (res['data']['following'].length == 0){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen(tabIndex: 0,)));
-    }
-        else{
-
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen(tabIndex: 1,)));
-        }
-      } catch (e) {
-        // print(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error logging in')),
+          fetchUserUrl,
+          body: req,
+          headers: {
+            'Content-Type': 'application/json', // Add this header
+          },
         );
+
+        // print(response.body);
+        final res = jsonDecode(response.body);
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        // print(res);
+        sharedPreferences.setString("userId", res['data']['_id']);
+        await analytics.logEvent(name: "Alpha_Login_success",
+        parameters: {
+          "timestamp": DateTime.now().toIso8601String()
+        }
+        );
+        if (res['data']['following'].length == 0) {
+                  DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "signin_response_time_email", parameters: {
+      "time": duration
+    });
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen(
+                        tabIndex: 0,
+                      )));
+        } else {
+                            DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "signin_response_time_email", parameters: {
+      "time": duration
+    });
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen(
+                        tabIndex: 1,
+                      )));
+        }
+      } catch (e){
+        await analytics.logEvent(name: "Alpha_Login_failure",
+        parameters: {
+          "timestamp": DateTime.now().toIso8601String()
+        }
+        );
+        // print(e);
+        Fluttertoast.showToast(msg: "Error logging in", backgroundColor: Colors.red);
       }
     }
   }
@@ -181,8 +209,18 @@ class _LoginFormState extends State<LoginForm> {
                 validator: _validatePassword,
               ),
               Align(
-alignment: Alignment.centerRight,
-child: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPassword()));}, child: Text("Forgot password?", style: TextStyle(color: Colors.blue),)),
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgotPassword()));
+                    },
+                    child: Text(
+                      "Forgot password?",
+                      style: TextStyle(color: Colors.blue),
+                    )),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -196,7 +234,7 @@ child: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builde
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-           
+
               SizedBox(height: 20),
               // Divider(),
               Text(
@@ -234,7 +272,6 @@ child: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builde
                   ),
                 ),
               ),
-        
             ],
           ),
         ),

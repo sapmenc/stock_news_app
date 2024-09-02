@@ -9,6 +9,7 @@ import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categori
 import 'package:stock_news_app_frontend/Screens/HomeScreens/_components/categories/Other.dart';
 import 'package:stock_news_app_frontend/_components/posts.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 
 class Home extends StatefulWidget {
@@ -60,12 +61,20 @@ class _HomeState extends State<Home> {
 
   }
 
-
+  void logHome() async{
+ await analytics.logEvent(name: "home", parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    });
+  }
 
   @override
   void initState() {
+   logHome();
     // TODO: implement initState
-    _scrollController.addListener(() {
+    _scrollController.addListener(() async{
+      await analytics.logEvent(name: "Scroll", parameters: {
+        "timestamp": DateTime.now().toIso8601String()
+      });
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
             setState(() {

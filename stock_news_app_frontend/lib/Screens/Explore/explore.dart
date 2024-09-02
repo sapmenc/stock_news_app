@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:stock_news_app_frontend/Screens/Explore/_components/companies.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/Screens/main_screen.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 
 class Explore extends StatefulWidget {
@@ -29,6 +30,7 @@ class _ExploreState extends State<Explore> {
     bool isFollowing = false;
 bool showButton = false;
   void fetchCompanies() async {
+    DateTime start = DateTime.now();
     Uri companiesUrl = Uri.parse(baseUrl + 'company/page?page=${page+1}&limit=25');
     final response = await client.get(companiesUrl);
     final res = jsonDecode(response.body);
@@ -49,6 +51,10 @@ bool showButton = false;
       }
       companies = [...companies, ...companiesList];
       page+=1;
+    });
+        DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "explore_load_time", parameters: {
+      "time": duration
     });
   }
 
@@ -87,8 +93,15 @@ bool showButton = false;
 
   }
 
+  void logExplore() async{
+    await analytics.logEvent(name: "company_listing", parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    });
+  }
   @override
   void initState() {
+    logExplore();
+
 
         _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -104,7 +117,14 @@ bool showButton = false;
     super.initState();
   }
 
+      void logSearches()async{
+      await analytics.logEvent(name: "Search", parameters: {
+        "timestamp": DateTime.now().toIso8601String()
+      });
+    }
+
   void filterCompanies()async{
+    DateTime start = DateTime.now();
     setState(() {
       isFetching = true;
     });
@@ -116,6 +136,7 @@ bool showButton = false;
       });
       fetchCompanies();
       fetchUser();
+      
       return;
     }
     Uri filterCompanies = Uri.parse(base_url+'company/search');
@@ -137,6 +158,11 @@ bool showButton = false;
       }
       isFetching = false;
     });
+            DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "search_response_time", parameters: {
+      "time": duration
+    });
+    logSearches();
 
   }
 

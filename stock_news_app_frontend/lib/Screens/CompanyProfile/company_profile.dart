@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stock_news_app_frontend/Screens/CompanyProfile/_components/company_details.dart';
 import 'package:stock_news_app_frontend/_components/posts.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,6 +31,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
   final base_url = '${baseUrl}';
   final client = http.Client();
   void getpostbyCompanyName() async {
+    DateTime start = DateTime.now();
     // print('Widget Id: ${widget.id}');
     Uri companyposturi =
         Uri.parse(baseUrl + 'post/companyName?page=${page}&limit=25');
@@ -47,12 +49,23 @@ class _CompanyProfileState extends State<CompanyProfile> {
       companyPosts = [...companyPosts, ...res['data']['posts']];
       companyData = res['data']['company'][0];
     });
+            DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "company_page_load_time", parameters: {
+      "time": duration
+    });
+  }
+
+  void logCompanyView() async {
+await analytics.logEvent(name: "companypage_View_${widget.name}", parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    });
   }
 
   @override
   void initState() {
     // TODO: implement initState
     // fetchCompanyData();
+    
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -61,6 +74,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
             });
         getpostbyCompanyName();
       }
+      logCompanyView();
     });
     getpostbyCompanyName();
     super.initState();

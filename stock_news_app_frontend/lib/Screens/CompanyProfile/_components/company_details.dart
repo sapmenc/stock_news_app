@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
@@ -43,7 +45,8 @@ class _CompanyDetailsState extends State<CompanyDetails> {
   }
 
   void toggleFollow() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    try {
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final userId = sharedPreferences.getString('userId');
     final base_url = '$baseUrl';
     Uri follow = Uri.parse(base_url + "company/follow");
@@ -66,10 +69,17 @@ class _CompanyDetailsState extends State<CompanyDetails> {
           isFollowing = !isFollowing;
         });
       }
+            else{
+        await analytics.logEvent(name: "Alpha_companypage_unfollow_${companyData['name']}", parameters: {
+          "timestamp": DateTime.now().toIso8601String()
+        });
+      }
     } else {
       setState(() {
         isFollowing = !isFollowing;
       });
+
+
 
       final response = await client.post(
         follow,
@@ -79,13 +89,24 @@ class _CompanyDetailsState extends State<CompanyDetails> {
         },
       );
 
+
       final res = jsonDecode(response.body);
       if (res['status'] == false) {
         setState(() {
           isFollowing = !isFollowing;
         });
       }
+      else{
+        await analytics.logEvent(name: "Alpha_companypage_follow_${companyData['id']}", parameters: {
+          "timestamp": DateTime.now().toIso8601String()
+        });
+      }
+
     }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Some error occured. try again later");
+    }
+    
   }
 
   @override

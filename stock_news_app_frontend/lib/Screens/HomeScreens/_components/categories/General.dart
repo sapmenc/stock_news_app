@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/_components/posts.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 class General extends StatefulWidget {
   const General({super.key});
@@ -20,6 +21,7 @@ class _GeneralState extends State<General> {
   List postData = [];
 bool end = false;
   void fetchPosts() async {
+    DateTime start = DateTime.now();
     Uri fetchposts = Uri.parse(baseUrl + 'post/company?page=${page}&limit=25');
     final req = jsonEncode(
         {"userEmail": FirebaseAuth.instance.currentUser!.email as String, "category": "General"});
@@ -36,11 +38,23 @@ bool end = false;
       postData = [...postData, ...res['data']];
       isFetching = false;
     });
+        DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "home_load_time_general", parameters: {
+      "time": duration
+    });
+  }
 
+        void logCategory()async{
+    await analytics.logEvent(name: "Category", parameters: {
+      "category_name": "General",
+      "timsestamp": DateTime.now().toIso8601String(),
+    });
   }
 
   @override
   void initState() {
+        super.initState();
+
     // TODO: implement initState
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -52,7 +66,7 @@ bool end = false;
       }
     });
     fetchPosts();
-    super.initState();
+    logCategory();
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -104,6 +105,9 @@ class _SignUpFormState extends State<SignUpForm> {
     if (res['status']) {
       timer.cancel();
       deleteAccountTimer.cancel();
+      FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+      analytics.logSignUp(signUpMethod: "email and password");
+      
 
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();

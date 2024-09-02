@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stock_news_app_frontend/Screens/Onboarding/screen_2.dart';
+import 'package:stock_news_app_frontend/main.dart';
 
-class Screen1 extends StatelessWidget {
+class Screen1 extends StatefulWidget {
   const Screen1({super.key});
 
-  
+  @override
+  State<Screen1> createState() => _Screen1State();
+}
 
+class _Screen1State extends State<Screen1> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    analytics.logEvent(name: "app_initiate",
+    parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    }
+    );
+  }
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       
       backgroundColor: Color.fromARGB(255, 18, 18, 18),
@@ -60,6 +75,11 @@ class Screen1 extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
+                      analytics.logEvent(name: "Alpha_Onboarding_Next_click",
+                      parameters: {
+                        "timestamp": DateTime.now().toIso8601String()
+                      }
+                      );
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Screen2()));
                     },
                     style: ElevatedButton.styleFrom(

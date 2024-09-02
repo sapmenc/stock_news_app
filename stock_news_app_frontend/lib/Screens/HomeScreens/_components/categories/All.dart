@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_news_app_frontend/_components/posts.dart';
+import 'package:stock_news_app_frontend/main.dart';
 import 'package:stock_news_app_frontend/utils.dart';
 class All extends StatefulWidget {
   const All({super.key});
@@ -21,6 +22,7 @@ class _AllState extends State<All> {
   bool end = false;
 
   void fetchPosts() async {
+    DateTime start = DateTime.now();
     Uri fetchposts = Uri.parse(baseUrl + 'post/company?page=${page}&limit=25');
     final req = jsonEncode(
         {"userEmail": FirebaseAuth.instance.currentUser!.email as String});
@@ -37,11 +39,23 @@ class _AllState extends State<All> {
       postData = [...postData, ...res['data']];
       isFetching = false;
     });
+    DateTime endTime = DateTime.now();
+    final duration = endTime.difference(start).inMilliseconds;    await analytics.logEvent(name: "home_load_time_all", parameters: {
+      "time": duration
+    });
 
+  }
+
+  void logCategory()async{
+    await analytics.logEvent(name: "Category", parameters: {
+      "category_name": "All",
+      "timsestamp": DateTime.now().toIso8601String(),
+    });
   }
 
   @override
   void initState() {
+    logCategory();
     // TODO: implement initState
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==

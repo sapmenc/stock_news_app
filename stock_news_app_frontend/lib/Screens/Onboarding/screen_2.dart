@@ -5,6 +5,8 @@ import 'package:stock_news_app_frontend/Screens/Onboarding/auth/signup.dart';
 
 import 'dart:ui' as ui show ImageFilter;
 
+import 'package:stock_news_app_frontend/main.dart';
+
 class Screen2 extends StatefulWidget {
   const Screen2({super.key});
 
@@ -18,7 +20,20 @@ class _Screen2State extends State<Screen2> {
   void _updateStateVariable(String stateValue) {
     authState.value = stateValue;
   }
-  
+
+  void logScreen2() async{
+        await analytics.logEvent(name: "app_onboarding_screen2",
+    parameters: {
+      "timestamp": DateTime.now().toIso8601String()
+    }
+    );
+  }
+    @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    logScreen2();
+  }
    
  Future<void> loginSlider() {
     return showModalBottomSheet(
@@ -64,6 +79,7 @@ class _Screen2State extends State<Screen2> {
   }
   @override
   Widget build(BuildContext context) {
+
 
     return Scaffold(
       
@@ -115,8 +131,14 @@ class _Screen2State extends State<Screen2> {
                 children: [
                   ElevatedButton(
                     
-                    onPressed: () {
+                    onPressed: () async{
                       _updateStateVariable('login');
+                      await analytics.logEvent(
+                        name: "Alpha_Login_initiated",
+                        parameters: {
+                          "timestamp": DateTime.now().toIso8601String()
+                        }
+                      );
                       loginSlider();
                     },
                     style: ElevatedButton.styleFrom(
@@ -134,10 +156,16 @@ class _Screen2State extends State<Screen2> {
                   ),
                   SizedBox(width: 15,),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async{
                       // signUpSlider();
                   _updateStateVariable('sign-up');
                       loginSlider();
+                                          await  analytics.logEvent(
+                        name: "Alpha_Signup_initiated",
+                        parameters: {
+                          "timestamp": DateTime.now().toIso8601String()
+                        }
+                      );
                       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>InterestedCompanies()));
                     },
                     style: ElevatedButton.styleFrom(
