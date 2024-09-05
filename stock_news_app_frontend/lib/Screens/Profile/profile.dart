@@ -85,8 +85,8 @@ class _ProfileState extends State<Profile> {
       child: Scaffold(
         appBar: AppBar(
           title: Image.asset(
-            'assets/Alpha-logo.png',
-            scale: 20,
+            'assets/alpha-logo-3.png',
+            scale: 15,
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,

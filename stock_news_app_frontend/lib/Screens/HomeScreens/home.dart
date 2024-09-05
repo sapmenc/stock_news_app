@@ -33,7 +33,6 @@ class _HomeState extends State<Home> {
     final req = jsonEncode({"email": userEmail});
     final response = await client.post(userUri,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print(response.body);
     final res = jsonDecode(response.body);
     setState(() {
       if (res['data']['following'].length == 0){
@@ -52,7 +51,6 @@ class _HomeState extends State<Home> {
         {"userEmail": FirebaseAuth.instance.currentUser!.email as String});
     final response = await client.post(fetchposts,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print(response.body);
     final res = jsonDecode(response.body);
 
     setState(() {
@@ -105,8 +103,8 @@ class _HomeState extends State<Home> {
             Text("Other", style: TextStyle(fontSize: 18),)
           ]),
           title: Image.asset(
-            'assets/Alpha-logo.png',
-            scale: 20,
+            'assets/alpha-logo-3.png',
+            scale: 15,
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,

@@ -26,9 +26,7 @@ class _CompaniesState extends State<Companies> {
 
     @override
   void initState() {
-    print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-    print(widget.name);
-    print(widget.isFollowing);
+  
     // TODO: implement initState
     setState(() {
       isFollowing = widget.isFollowing;
@@ -64,9 +62,10 @@ SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
           isFollowing = !isFollowing;
         });
       }      else{
-        await analytics.logEvent(name: "Alpha_companylisting_unfollow_${widget.id}", parameters: {
+        await analytics.logEvent(name: "Companylisting_unfollow", parameters: {
           "timestamp": DateTime.now().toIso8601String(),
-          "user": userId
+          "user": userId,
+          "company_name": widget.name
         });
       }
     } else {
@@ -81,9 +80,10 @@ SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
           'Content-Type': 'application/json', // Add this header
         },
       );
-      await analytics.logEvent(name: "Alpha_companylisting_follow_${widget.name}", parameters: {
+      await analytics.logEvent(name: "Companylisting_follow", parameters: {
         "timestamp": DateTime.now().toIso8601String(),
-        "user": userId
+        "user": userId,
+        "company_name": widget.name
       });
       // print(response.body);
       final res = jsonDecode(response.body);

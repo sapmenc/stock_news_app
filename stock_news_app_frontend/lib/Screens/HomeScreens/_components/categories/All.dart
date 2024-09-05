@@ -28,7 +28,6 @@ class _AllState extends State<All> {
         {"userEmail": FirebaseAuth.instance.currentUser!.email as String});
     final response = await client.post(fetchposts,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print(response.body);
     final res = jsonDecode(response.body);
     if (res['data'] == null || res['data'].length<25){
       setState(() {

@@ -114,14 +114,14 @@ class _PostsState extends State<Posts> {
     // TODO: implement initState
     setVariables();
     super.initState();
- createFileOfPdfUrl().then((f) {
+    createFileOfPdfUrl().then((f) {
       setState(() {
         remotePDFpath = f.path;
       });
     });
   }
 
-    Future<File> createFileOfPdfUrl() async {
+  Future<File> createFileOfPdfUrl() async {
     Completer<File> completer = Completer();
     // print("Start download file from internet!");
     try {
@@ -145,8 +145,6 @@ class _PostsState extends State<Posts> {
 
     return completer.future;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -184,8 +182,10 @@ class _PostsState extends State<Posts> {
             numLikes -= 1;
           }
         });
-      }else{
-        analytics.logEvent(name: "React_bull_${widget.id}");
+      } else {
+        analytics.logEvent(name: "React_bull", parameters: {
+          "postId": widget.id,
+        });
       }
     }
 
@@ -219,8 +219,10 @@ class _PostsState extends State<Posts> {
             numDislikes -= 1;
           }
         });
-      }else{
-        analytics.logEvent(name: "React_bear_${widget.id}");
+      } else {
+        analytics.logEvent(name: "React_bear", parameters: {
+          "postId": widget.id,
+        });
       }
     }
 
@@ -236,28 +238,31 @@ class _PostsState extends State<Posts> {
     Future? handlePdf(String pdf) async {
       final Uri url = Uri.parse(pdf);
       if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.inAppBrowserView);
+        await launchUrl(url, mode: LaunchMode.inAppWebView);
       } else {
         throw 'Could not launch $url';
       }
-     
     }
 
-    Future? createHandleClick() async{
-      // return () async {
-      //   await handlePdf(pdf);
-      // };
-if (remotePDFpath.isNotEmpty) {
-  await analytics.logEvent(name: "Article_pdf_${widget.id}", parameters: {
-    "timestamp": DateTime.now().toIso8601String()
-  });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PDFScreen(path: remotePDFpath),
-                        ),
-                      );
-                    }
+    Future? createHandleClick() async {
+      if (!widget.pdf.endsWith("pdf")) {
+        
+          await handlePdf(pdf);
+        
+      } else {
+        if (remotePDFpath.isNotEmpty) {
+          await analytics.logEvent(name: "Article_pdf", parameters: {
+            "timestamp": DateTime.now().toIso8601String(),
+            "postId": widget.id
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PDFScreen(path: remotePDFpath),
+            ),
+          );
+        }
+      }
     }
 
     var postActions = [
@@ -329,35 +334,33 @@ if (remotePDFpath.isNotEmpty) {
                     ),
                   );
                 },
-                child: 
-                Container(
-                  constraints: BoxConstraints(maxWidth: screenWidth*0.5, minWidth: screenWidth*0.3),
+                child: Container(
+                  constraints: BoxConstraints(
+                      maxWidth: screenWidth * 0.5, minWidth: screenWidth * 0.3),
                   child: Row(
                     children: [
                       CircleAvatar(
-                        
                         backgroundColor: Colors.grey,
                         backgroundImage: NetworkImage(widget.logo),
                       ),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                            widget.name,
-                            style: const TextStyle(
-                              color: Color(0xFF79ABFF),
-                              fontWeight: FontWeight.bold,
-                            ),
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
+                          widget.name,
+                          style: const TextStyle(
+                            color: Color(0xFF79ABFF),
+                            fontWeight: FontWeight.bold,
                           ),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                        ),
                       ),
-                      
                     ],
                   ),
                 ),
               ),
               Container(
-                constraints: BoxConstraints(maxWidth: screenWidth*0.4),
+                constraints: BoxConstraints(maxWidth: screenWidth * 0.4),
                 child: Text(
                   '${widget.createdAt.substring(0, 10).split('-').reversed.join('-')} | ${widget.createdAt.substring(11, 19)}',
                   style: TextStyle(color: Color(0xFF7D7D7D), fontSize: 12),
@@ -365,13 +368,14 @@ if (remotePDFpath.isNotEmpty) {
               ),
             ],
           ),
-          
           GestureDetector(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>CommentsScreen(postId: widget.id)));
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CommentsScreen(postId: widget.id)));
             },
             child: Container(
-              
               margin: EdgeInsets.symmetric(vertical: 10),
               decoration: const BoxDecoration(
                 border: Border(bottom: BorderSide(color: Color(0xFF4285F4))),

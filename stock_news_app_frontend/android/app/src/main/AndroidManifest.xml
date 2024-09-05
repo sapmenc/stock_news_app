@@ -8,7 +8,7 @@
     </intent>
 </queries>
     <application
-        android:label="AlphaTribe"
+        android:label="Alpha Tribe"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

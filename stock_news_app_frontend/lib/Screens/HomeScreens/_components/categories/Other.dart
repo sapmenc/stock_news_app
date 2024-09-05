@@ -27,7 +27,6 @@ bool end = false;
         {"userEmail": FirebaseAuth.instance.currentUser!.email as String, "category": "Others"});
     final response = await client.post(fetchposts,
         body: req, headers: {'Content-Type': 'Application/json'});
-    print(response.body);
     final res = jsonDecode(response.body);
     if (res['data'] == null || res['data'].length<25){
       setState(() {

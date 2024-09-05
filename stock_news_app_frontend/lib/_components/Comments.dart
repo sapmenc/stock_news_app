@@ -31,7 +31,6 @@ class _CommentsState extends State<Comments> {
     final response = await client.post(fetchcomments,
         body: req, headers: {"Content-Type": "application/json"});
     final res = jsonDecode(response.body);
-    // print("#############################");
     print(res);
 
     if (res['status']) {
@@ -49,8 +48,7 @@ class _CommentsState extends State<Comments> {
   void createComment() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final userId = sharedPreferences.getString("userId");
-// print("111111111111111111111111111111111111");
-// print(_commentController.text);
+
     Uri commentUri = Uri.parse(baseUrl + 'post/comment');
     final req = jsonEncode({
       "postId": widget.id,
@@ -59,11 +57,11 @@ class _CommentsState extends State<Comments> {
     });
     final response = await client.post(commentUri,
         body: req, headers: {'Content-Type': 'Application/json'});
-// print(response.body);
     final res = jsonDecode(response.body);
     _commentController.clear();
-    await analytics.logEvent(name: "Comment_${widget.id}", parameters: {
-      "timestamp": DateTime.now().toIso8601String()
+    await analytics.logEvent(name: "Comment", parameters: {
+      "timestamp": DateTime.now().toIso8601String(),
+      "postId": widget.id
     });
     setState(() {
       postData = {};
@@ -74,8 +72,9 @@ class _CommentsState extends State<Comments> {
   }
 
   void logArticleView() async{
-await analytics.logEvent(name: "Article_view_${widget.id}", parameters: {
-      "timestamp": DateTime.now().toIso8601String()
+await analytics.logEvent(name: "Article_view", parameters: {
+      "timestamp": DateTime.now().toIso8601String(),
+      "postId": widget.id
     });
   }
 
@@ -171,8 +170,6 @@ await analytics.logEvent(name: "Article_view_${widget.id}", parameters: {
               mainAxisSize: MainAxisSize.max,
               children: commentData!.isNotEmpty
                   ? commentData!.map((e) {
-                      // print("1111111111111111111111111");
-                      // print(e['comment']);
                       return Container(
                           // height: double.infinity,
                           child: Comment(

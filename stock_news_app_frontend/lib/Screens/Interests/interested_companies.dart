@@ -49,7 +49,7 @@
 //     return SafeArea(
 //       child: Scaffold(
 //          appBar: AppBar(
-//             title: Image.asset('assets/Alpha-logo.png', scale: 20,),
+//             title: Image.asset('assets/alpha-logo-3.png', scale: 20,),
 //             centerTitle: true,
 //             backgroundColor: Colors.transparent,
 //             elevation: 0.0,

@@ -56,8 +56,9 @@ class _CompanyProfileState extends State<CompanyProfile> {
   }
 
   void logCompanyView() async {
-await analytics.logEvent(name: "companypage_View_${widget.name}", parameters: {
-      "timestamp": DateTime.now().toIso8601String()
+await analytics.logEvent(name: "companypage_View", parameters: {
+      "timestamp": DateTime.now().toIso8601String(),
+      "company_name": widget.name
     });
   }
 
@@ -85,8 +86,8 @@ await analytics.logEvent(name: "companypage_View_${widget.name}", parameters: {
     return Scaffold(
         appBar: AppBar(
           title: Image.asset(
-            'assets/Alpha-logo.png',
-            scale: 20,
+            'assets/alpha-logo-3.png',
+            scale: 15,
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,

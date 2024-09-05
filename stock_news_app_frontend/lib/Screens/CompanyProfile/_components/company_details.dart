@@ -31,7 +31,6 @@ class _CompanyDetailsState extends State<CompanyDetails> {
         body: req, headers: {'Content-Type': 'application/json'});
     final res = jsonDecode(response.body);
     // print("111111111111111111111111111111111111111111111111");
-    print(response.body);
     setState(() {
       companyData = res['data'];
     });
@@ -70,8 +69,9 @@ class _CompanyDetailsState extends State<CompanyDetails> {
         });
       }
             else{
-        await analytics.logEvent(name: "Alpha_companypage_unfollow_${companyData['name']}", parameters: {
-          "timestamp": DateTime.now().toIso8601String()
+        await analytics.logEvent(name: "Companypage_unfollow", parameters: {
+          "timestamp": DateTime.now().toIso8601String(),
+          "company_name": companyData['name']
         });
       }
     } else {
@@ -97,8 +97,9 @@ class _CompanyDetailsState extends State<CompanyDetails> {
         });
       }
       else{
-        await analytics.logEvent(name: "Alpha_companypage_follow_${companyData['id']}", parameters: {
-          "timestamp": DateTime.now().toIso8601String()
+        await analytics.logEvent(name: "Companypage_follow", parameters: {
+          "timestamp": DateTime.now().toIso8601String(),
+          "company_name": companyData['name']
         });
       }
 

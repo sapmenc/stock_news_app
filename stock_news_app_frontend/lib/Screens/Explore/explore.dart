@@ -74,8 +74,6 @@ bool showButton = false;
     );
     final res = jsonDecode(response.body);
     if (res['data']['following'].length>0){
-      print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
-      print(res['data']['following']);
         setState(() {
       followingCompanies = res['data']['following'];
       isFollowing = true;
@@ -171,8 +169,8 @@ bool showButton = false;
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
-          'assets/Alpha-logo.png',
-          scale: 20,
+          'assets/alpha-logo-3.png',
+          scale: 15,
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,

@@ -58,18 +58,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         'duration_minutes': duration,
       },
     );
-    print("lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
   }
 
     @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      print("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
       // App has resumed, start the session timer
       _sessionStartTime = DateTime.now();
     } else if (state == AppLifecycleState.paused) {
       // App is about to be paused or killed, log session duration
-      print("ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp");
       _logSessionDuration();
     }
   }
@@ -114,7 +111,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }
     } catch (e) {
       // Handle errors here
-      print('Error: $e');
       setState(() {
         isLoggedin = false;
       });
@@ -132,7 +128,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'alpha',
+      title: 'Alpha Tribe',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
